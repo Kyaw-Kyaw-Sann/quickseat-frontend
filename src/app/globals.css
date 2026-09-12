@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+:root {
+  --qs-background: #09090b;
+  --qs-surface: #151519;
+  --qs-surface-raised: #202026;
+  --qs-border: #34343c;
+  --qs-primary: #ff2745;
+  --qs-primary-strong: #e91635;
+  --qs-amber: #f2ae43;
+  --qs-text: #f7f7f8;
+  --qs-text-muted: #a1a1aa;
+  --qs-success: #38c172;
+  --qs-warning: #f2ae43;
+  --qs-danger: #f05252;
+  --qs-font-display: Georgia, "Times New Roman", serif;
+  --qs-font-body: Arial, Helvetica, sans-serif;
+  --qs-page-padding: clamp(1rem, 3vw, 3rem);
+  --qs-section-space: clamp(3rem, 8vw, 6rem);
+}
+
 *,
 *::before,
 *::after {
@@ -13,7 +32,49 @@ body {
 
 body {
   margin: 0;
-  background: #09090b;
-  color: #f4f4f5;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--qs-background);
+  color: var(--qs-text);
+  font-family: var(--qs-font-body);
+  line-height: 1.5;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid var(--qs-primary);
+  outline-offset: 3px;
+}
+
+.qs-display {
+  font-family: var(--qs-font-display);
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.qs-heading {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.qs-muted {
+  color: var(--qs-text-muted);
 }
