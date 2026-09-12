@@ -1687,6 +1687,7 @@ Phase 14 — Booking Confirmation
 Phase 15 — Ticket
 Phase 16 — My Bookings
 Phase 17 — Booking Detail
+///////////////////////////////
 Phase 18 — Staff Frontend
 Phase 19 — Admin Layout
 Phase 20 — Admin Cinema / Screen / Seat Management
