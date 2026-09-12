@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "QuickSeat",
-  description: "Cinema ticket booking",
+  title: {
+    default: "QuickSeat | Cinema Ticket Booking",
+    template: "%s | QuickSeat",
+  },
+  description: "Discover movies, reserve seats, and manage cinema tickets.",
 };
 
 export default function RootLayout({
