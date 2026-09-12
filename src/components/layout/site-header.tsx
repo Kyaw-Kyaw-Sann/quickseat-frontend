@@ -166,7 +166,7 @@ function AuthActions({ onNavigate }: NavigationLinksProps) {
         Login
       </Link>
       <Link
-        className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[var(--qs-primary)] px-4 text-sm font-semibold text-white shadow-[0_0_20px_rgba(255,31,66,0.28)] transition-colors hover:bg-[var(--qs-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--qs-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--qs-bg)]"
+        className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[var(--qs-primary)] px-4 text-sm font-semibold text-white shadow-[0_0_20px_rgba(255,31,66,0.28)] transition-colors hover:bg-[var(--qs-primary-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--qs-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--qs-background)]"
         href="/register"
         onClick={onNavigate}
       >
