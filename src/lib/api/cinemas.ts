@@ -3,7 +3,9 @@ import { apiClient } from "@/lib/api/client";
 import type { ApiSuccess, PaginatedResponse } from "@/lib/api/types";
 
 type CinemaListParams = {
+  city?: string;
   page?: number;
+  search?: string;
   size?: number;
 };
 
@@ -16,4 +18,8 @@ export function getCinemas(
     ...publicRequest,
     query: params,
   });
+}
+
+export function getCinema(cinemaId: number): Promise<ApiSuccess<Cinema>> {
+  return apiClient<Cinema>(`/cinemas/${cinemaId}`, publicRequest);
 }
