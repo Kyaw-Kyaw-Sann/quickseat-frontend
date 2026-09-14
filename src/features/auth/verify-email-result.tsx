@@ -1,7 +1,9 @@
 "use client";
 
 import { AuthFormShell } from "@/features/auth/auth-form-shell";
+import { useAuth } from "@/features/auth/auth-provider";
 import { getAuthFormError } from "@/features/auth/form-errors";
+import { getPendingSeatSelectionReturnTo } from "@/features/seat-holds/pending-seat-selection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/ui/error-state";
@@ -14,6 +16,7 @@ type VerificationState = "loading" | "success" | "error";
 
 export function VerifyEmailResult({ token }: { token?: string }) {
   const router = useRouter();
+  const { markEmailVerified } = useAuth();
   const verificationStarted = useRef(false);
   const [state, setState] = useState<VerificationState>(token ? "loading" : "error");
   const [message, setMessage] = useState(
@@ -30,6 +33,7 @@ export function VerifyEmailResult({ token }: { token?: string }) {
 
     verifyEmail(token)
       .then((response) => {
+        markEmailVerified();
         setMessage(response.message);
         setState("success");
       })
@@ -37,7 +41,7 @@ export function VerifyEmailResult({ token }: { token?: string }) {
         setMessage(getAuthFormError(error).message);
         setState("error");
       });
-  }, [token]);
+  }, [markEmailVerified, token]);
 
   return (
     <AuthFormShell description="Email verification result" title="Verify your email">
@@ -53,7 +57,16 @@ export function VerifyEmailResult({ token }: { token?: string }) {
         <div className="space-y-5 text-center">
           <Badge tone="success">VERIFIED</Badge>
           <p className="text-sm text-[var(--qs-text-muted)]" role="status">{message}</p>
-          <Button className="w-full" onClick={() => router.push("/")}>Continue to QuickSeat</Button>
+          <Button
+            className="w-full"
+            onClick={() =>
+              window.location.assign(
+                getPendingSeatSelectionReturnTo() ?? "/",
+              )
+            }
+          >
+            Continue to QuickSeat
+          </Button>
         </div>
       ) : null}
 

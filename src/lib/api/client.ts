@@ -24,6 +24,12 @@ export type ApiAuthAdapter = {
   onUnauthorized: () => void;
 };
 
+export type ApiBlobResponse = {
+  blob: Blob;
+  contentType: string;
+  filename?: string;
+};
+
 let authAdapter: ApiAuthAdapter | null = null;
 
 export function configureApiAuth(adapter: ApiAuthAdapter | null): void {
@@ -133,6 +139,81 @@ export async function apiClient<T>(
   return payload as ApiSuccess<T>;
 }
 
+export async function apiBlobClient(
+  path: string,
+  {
+    auth = true,
+    body,
+    headers: providedHeaders,
+    query,
+    retryUnauthorized = true,
+    ...options
+  }: ApiRequestOptions = {},
+): Promise<ApiBlobResponse> {
+  const headers = new Headers(providedHeaders);
+  headers.set("Accept", "*/*");
+
+  const accessToken = auth ? authAdapter?.getAccessToken() : null;
+  if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+
+  if (body !== undefined) headers.set("Content-Type", "application/json");
+
+  let response: Response;
+
+  try {
+    response = await fetch(buildApiUrl(path, query), {
+      ...options,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      headers,
+    });
+  } catch {
+    throw createNetworkError();
+  }
+
+  if (response.status === 401 && auth && authAdapter) {
+    if (retryUnauthorized) {
+      const refreshedAccessToken = await authAdapter.refreshAccessToken();
+
+      if (refreshedAccessToken) {
+        return apiBlobClient(path, {
+          ...options,
+          auth,
+          body,
+          headers: providedHeaders,
+          query,
+          retryUnauthorized: false,
+        });
+      }
+    }
+
+    authAdapter.onUnauthorized();
+  }
+
+  if (!response.ok) {
+    const payload = await parseJsonSafely(response);
+
+    if (isApiError(payload)) {
+      throw normalizeApiError(payload, response.status);
+    }
+
+    throw new ApiRequestError({
+      message: "The file could not be retrieved.",
+      status: response.status,
+      code: "HTTP_ERROR",
+    });
+  }
+
+  const blob = await response.blob();
+
+  return {
+    blob,
+    contentType: response.headers.get("Content-Type") ?? blob.type,
+    filename: getContentDispositionFilename(
+      response.headers.get("Content-Disposition"),
+    ),
+  };
+}
+
 async function parseJsonSafely(response: Response): Promise<unknown> {
   const responseText = await response.text();
 
@@ -160,4 +241,36 @@ function isApiError(payload: unknown): payload is ApiError {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
+}
+
+function getContentDispositionFilename(
+  contentDisposition: string | null,
+): string | undefined {
+  if (!contentDisposition) return undefined;
+
+  const encodedMatch = contentDisposition.match(
+    /filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i,
+  );
+  const plainMatch = contentDisposition.match(
+    /filename\s*=\s*(?:"([^"]+)"|([^;]+))/i,
+  );
+  const encodedValue = encodedMatch?.[1]?.trim().replace(/^"|"$/g, "");
+  const plainValue = (plainMatch?.[1] ?? plainMatch?.[2])?.trim();
+
+  let filename = encodedValue ?? plainValue;
+  if (!filename) return undefined;
+
+  try {
+    filename = decodeURIComponent(filename);
+  } catch {
+    // Keep the backend-provided value when it is not URI encoded.
+  }
+
+  const safeFilename = filename
+    .replace(/[\\/:*?"<>|\u0000-\u001f\u007f]/g, "-")
+    .trim();
+
+  return safeFilename && safeFilename !== "." && safeFilename !== ".."
+    ? safeFilename
+    : undefined;
 }

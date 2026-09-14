@@ -1,8 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog } from "@/components/ui/dialog";
+import { useAuth } from "@/features/auth/auth-provider";
+import { isCustomer } from "@/features/auth/roles";
+import { withReturnTo } from "@/features/auth/return-path";
+import { VerificationRequired } from "@/features/auth/verification-required";
+import { isVerificationRequiredError } from "@/features/auth/verification-errors";
+import {
+  writeActiveSeatHold,
+} from "@/features/seat-holds/active-seat-hold";
+import {
+  clearPendingSeatSelection,
+  readPendingSeatSelection,
+  writePendingSeatSelection,
+} from "@/features/seat-holds/pending-seat-selection";
 import type {
   SeatInventoryStatus,
   ShowtimeSeat,
@@ -10,7 +24,11 @@ import type {
 } from "@/features/showtimes/types";
 import { formatMMK } from "@/lib/formatters/currency";
 import { formatMyanmarDateTime } from "@/lib/formatters/date-time";
+import { isApiRequestError } from "@/lib/api/errors";
+import { createSeatHold } from "@/lib/api/seat-holds";
+import { getShowtimeSeats } from "@/lib/api/showtimes";
 import { cn } from "@/lib/utils/cn";
+import { useRouter } from "next/navigation";
 
 type SeatSelectionProps = {
   seatMap: ShowtimeSeatMap;
@@ -39,28 +57,231 @@ const statusLabels: Record<SeatInventoryStatus, string> = {
 };
 
 export function SeatSelection({ seatMap }: SeatSelectionProps) {
+  const router = useRouter();
+  const {
+    isEmailVerificationRequired,
+    isLoading: isAuthLoading,
+    markEmailVerified,
+    user,
+  } = useAuth();
+  const submissionLock = useRef(false);
+  const [inventory, setInventory] = useState(seatMap);
   const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
-  const [selectionReady, setSelectionReady] = useState(false);
+  const [isCreatingHold, setIsCreatingHold] = useState(false);
+  const [verificationOpen, setVerificationOpen] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [noticeTone, setNoticeTone] = useState<"success" | "warning">(
+    "success",
+  );
+  const [roleError, setRoleError] = useState("");
 
-  const rows = useMemo(() => groupSeatsInBackendOrder(seatMap.seats), [seatMap]);
+  const rows = useMemo(
+    () => groupSeatsInBackendOrder(inventory.seats),
+    [inventory.seats],
+  );
   const selectedSeats = useMemo(
     () =>
-      seatMap.seats.filter((seat) =>
+      inventory.seats.filter((seat) =>
         selectedSeatIds.includes(seat.showtimeSeatId),
       ),
-    [seatMap.seats, selectedSeatIds],
+    [inventory.seats, selectedSeatIds],
   );
   const total = selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
+
+  useEffect(() => {
+    const restore = window.setTimeout(() => {
+      const pendingSelection = readPendingSeatSelection();
+      if (pendingSelection?.showtimeId !== seatMap.showtimeId) return;
+
+      const availableSeatIds = new Set(
+        seatMap.seats
+          .filter((seat) => seat.status === "AVAILABLE")
+          .map((seat) => seat.showtimeSeatId),
+      );
+      const restoredSeatIds = pendingSelection.showtimeSeatIds.filter((id) =>
+        availableSeatIds.has(id),
+      );
+      const unavailableCount =
+        pendingSelection.showtimeSeatIds.length - restoredSeatIds.length;
+
+      setSelectedSeatIds(restoredSeatIds);
+      setNotice(
+        unavailableCount > 0
+          ? `${unavailableCount} previously selected ${unavailableCount === 1 ? "seat is" : "seats are"} no longer available and ${unavailableCount === 1 ? "was" : "were"} removed.`
+          : "Your selected seats were restored after sign-in.",
+      );
+      setNoticeTone(unavailableCount > 0 ? "warning" : "success");
+
+      if (restoredSeatIds.length === 0) {
+        clearPendingSeatSelection();
+      } else {
+        writePendingSeatSelection({
+          ...pendingSelection,
+          showtimeSeatIds: restoredSeatIds,
+        });
+      }
+    }, 0);
+
+    return () => window.clearTimeout(restore);
+  }, [seatMap]);
 
   function toggleSeat(seat: ShowtimeSeat) {
     if (seat.status !== "AVAILABLE") return;
 
-    setSelectionReady(false);
-    setSelectedSeatIds((current) =>
-      current.includes(seat.showtimeSeatId)
+    setRoleError("");
+    setNotice("");
+    setSelectedSeatIds((current) => {
+      const next = current.includes(seat.showtimeSeatId)
         ? current.filter((id) => id !== seat.showtimeSeatId)
-        : [...current, seat.showtimeSeatId],
-    );
+        : [...current, seat.showtimeSeatId];
+      const pendingSelection = readPendingSeatSelection();
+
+      if (pendingSelection?.showtimeId === seatMap.showtimeId) {
+        if (next.length === 0) {
+          clearPendingSeatSelection();
+        } else {
+          writePendingSeatSelection({
+            ...pendingSelection,
+            showtimeSeatIds: next,
+          });
+        }
+      }
+
+      return next;
+    });
+  }
+
+  async function handleContinue(skipKnownVerificationCheck = false) {
+    if (
+      selectedSeatIds.length === 0 ||
+      isAuthLoading ||
+      submissionLock.current
+    ) {
+      return;
+    }
+
+    const returnTo = `${window.location.pathname}${window.location.search}`;
+    writePendingSeatSelection({
+      showtimeId: inventory.showtimeId,
+      showtimeSeatIds: selectedSeatIds,
+      returnTo,
+    });
+    setRoleError("");
+
+    if (!user) {
+      router.push(withReturnTo("/login", returnTo));
+      return;
+    }
+
+    if (!isCustomer(user)) {
+      setRoleError(
+        "Seat reservations are available to customer accounts only. Please sign in with a customer account.",
+      );
+      return;
+    }
+
+    if (isEmailVerificationRequired && !skipKnownVerificationCheck) {
+      setVerificationOpen(true);
+      return;
+    }
+
+    submissionLock.current = true;
+    setIsCreatingHold(true);
+    setNotice("");
+    let holdCreated = false;
+
+    try {
+      const latestSeatMap = (await getShowtimeSeats(inventory.showtimeId)).data;
+      setInventory(latestSeatMap);
+
+      const availableSeatIds = new Set(
+        latestSeatMap.seats
+          .filter((seat) => seat.status === "AVAILABLE")
+          .map((seat) => seat.showtimeSeatId),
+      );
+      const stillAvailableSelection = selectedSeatIds.filter((id) =>
+        availableSeatIds.has(id),
+      );
+
+      if (stillAvailableSelection.length !== selectedSeatIds.length) {
+        setSelectedSeatIds(stillAvailableSelection);
+        persistAvailableSelection(stillAvailableSelection, returnTo);
+        setNoticeTone("warning");
+        setNotice(
+          "Some selected seats are no longer available. We updated your selection; please review it before continuing.",
+        );
+        return;
+      }
+
+      const response = await createSeatHold({
+        showtimeId: inventory.showtimeId,
+        showtimeSeatIds: stillAvailableSelection,
+      });
+      writeActiveSeatHold({
+        showtimeId: inventory.showtimeId,
+        hold: response.data,
+      });
+      markEmailVerified();
+      clearPendingSeatSelection();
+      holdCreated = true;
+      router.push(
+        `/checkout/hold/${encodeURIComponent(response.data.bookingReference)}?showtimeId=${inventory.showtimeId}`,
+      );
+    } catch (error) {
+      if (isApiRequestError(error) && error.status === 409) {
+        await handleSeatConflict(returnTo);
+      } else if (isVerificationRequiredError(error)) {
+        setVerificationOpen(true);
+      } else {
+        setRoleError(
+          error instanceof Error
+            ? error.message
+            : "The seat hold could not be created. Please try again.",
+        );
+      }
+    } finally {
+      if (!holdCreated) {
+        submissionLock.current = false;
+        setIsCreatingHold(false);
+      }
+    }
+  }
+
+  function persistAvailableSelection(ids: number[], returnTo: string) {
+    if (ids.length === 0) {
+      clearPendingSeatSelection();
+      return;
+    }
+
+    writePendingSeatSelection({
+      showtimeId: inventory.showtimeId,
+      showtimeSeatIds: ids,
+      returnTo,
+    });
+  }
+
+  async function handleSeatConflict(returnTo: string) {
+    setRoleError("This seat was just taken. Please choose another seat.");
+
+    try {
+      const latestSeatMap = (await getShowtimeSeats(inventory.showtimeId)).data;
+      setInventory(latestSeatMap);
+      const availableSeatIds = new Set(
+        latestSeatMap.seats
+          .filter((seat) => seat.status === "AVAILABLE")
+          .map((seat) => seat.showtimeSeatId),
+      );
+      const retainedSelection = selectedSeatIds.filter((id) =>
+        availableSeatIds.has(id),
+      );
+      setSelectedSeatIds(retainedSelection);
+      persistAvailableSelection(retainedSelection, returnTo);
+    } catch {
+      setNoticeTone("warning");
+      setNotice(
+        "We could not refresh the seat map. Refresh the page before choosing again.",
+      );
+    }
   }
 
   return (
@@ -72,15 +293,36 @@ export function SeatSelection({ seatMap }: SeatSelectionProps) {
               Choose your seats
             </p>
             <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-              {seatMap.movieTitle}
+              {inventory.movieTitle}
             </h1>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--qs-text-muted)]">
-              <span>{seatMap.screenName}</span>
-              <time dateTime={seatMap.startTime}>
-                {formatMyanmarDateTime(seatMap.startTime)}
+              <span>{inventory.screenName}</span>
+              <time dateTime={inventory.startTime}>
+                {formatMyanmarDateTime(inventory.startTime)}
               </time>
               <span>Myanmar time</span>
             </div>
+            {notice ? (
+              <p
+                className={cn(
+                  "mt-4 rounded-lg border px-3 py-2 text-sm",
+                  noticeTone === "warning"
+                    ? "border-[#5c3f16] bg-[#1c170f] text-[#ffd28a]"
+                    : "border-[#35543f] bg-[#122119] text-[#9be4b6]",
+                )}
+                role="status"
+              >
+                {notice}
+              </p>
+            ) : null}
+            {roleError ? (
+              <p
+                className="mt-4 rounded-lg border border-[#6d2428] bg-[#351112] px-3 py-2 text-sm text-[#ff9999]"
+                role="alert"
+              >
+                {roleError}
+              </p>
+            ) : null}
           </div>
 
           <div className="overflow-x-auto px-4 py-7 sm:px-7">
@@ -150,9 +392,10 @@ export function SeatSelection({ seatMap }: SeatSelectionProps) {
         <aside className="hidden lg:block" aria-label="Selected seat summary">
           <Card className="sticky top-24">
             <SelectionSummary
-              onContinue={() => setSelectionReady(true)}
+              isAuthLoading={isAuthLoading}
+              isCreatingHold={isCreatingHold}
+              onContinue={handleContinue}
               selectedSeats={selectedSeats}
-              selectionReady={selectionReady}
               total={total}
             />
           </Card>
@@ -165,27 +408,44 @@ export function SeatSelection({ seatMap }: SeatSelectionProps) {
       >
         <SelectionSummary
           compact
-          onContinue={() => setSelectionReady(true)}
+          isAuthLoading={isAuthLoading}
+          isCreatingHold={isCreatingHold}
+          onContinue={handleContinue}
           selectedSeats={selectedSeats}
-          selectionReady={selectionReady}
           total={total}
         />
       </div>
+
+      <Dialog
+        onOpenChange={setVerificationOpen}
+        open={verificationOpen}
+        title="Email verification required"
+      >
+        <VerificationRequired
+          email={user?.email ?? ""}
+          onTryAgain={() => {
+            setVerificationOpen(false);
+            void handleContinue(true);
+          }}
+        />
+      </Dialog>
     </>
   );
 }
 
 function SelectionSummary({
   compact = false,
+  isAuthLoading,
+  isCreatingHold,
   onContinue,
   selectedSeats,
-  selectionReady,
   total,
 }: {
   compact?: boolean;
-  onContinue: () => void;
+  isAuthLoading: boolean;
+  isCreatingHold: boolean;
+  onContinue: () => Promise<void>;
   selectedSeats: ShowtimeSeat[];
-  selectionReady: boolean;
   total: number;
 }) {
   const selectedSeatIds = selectedSeats.map((seat) => seat.showtimeSeatId);
@@ -238,16 +498,17 @@ function SelectionSummary({
 
       <Button
         className={cn("w-full", compact && "mt-3")}
-        disabled={selectedSeats.length === 0}
-        onClick={onContinue}
+        disabled={
+          selectedSeats.length === 0 || isAuthLoading || isCreatingHold
+        }
+        onClick={() => void onContinue()}
       >
-        Continue
+        {isCreatingHold
+          ? "Holding seats…"
+          : isAuthLoading
+            ? "Checking session…"
+            : "Continue"}
       </Button>
-      {selectionReady && (
-        <p className="mt-2 text-center text-xs text-[var(--qs-text-muted)]" role="status">
-          Your seat selection is ready.
-        </p>
-      )}
     </div>
   );
 }

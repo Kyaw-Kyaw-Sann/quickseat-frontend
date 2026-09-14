@@ -5,6 +5,7 @@ import { loginCustomer, logoutSession, registerCustomer } from "@/lib/api/auth";
 import {
   clearAuthSession,
   readAuthSession,
+  writeAuthSession,
 } from "@/features/auth/storage";
 import {
   persistSession,
@@ -16,6 +17,9 @@ import type {
   LoginRequest,
   RegisterRequest,
 } from "@/features/auth/types";
+import { clearPendingSeatSelection } from "@/features/seat-holds/pending-seat-selection";
+import { clearActiveSeatHold } from "@/features/seat-holds/active-seat-hold";
+import { clearTicketBookingReferences } from "@/features/tickets/ticket-context";
 import { useRouter } from "next/navigation";
 import {
   createContext,
@@ -31,8 +35,10 @@ type AuthContextValue = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isEmailVerificationRequired: boolean;
   login: (request: LoginRequest) => Promise<string>;
   register: (request: RegisterRequest) => Promise<string>;
+  markEmailVerified: () => void;
   logout: () => Promise<void>;
 };
 
@@ -76,14 +82,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (request: LoginRequest) => {
     const response = await loginCustomer(request);
-    setSession(persistSession(response.data));
+    setSession(persistSession(response.data, "unknown"));
     return response.message;
   }, []);
 
   const register = useCallback(async (request: RegisterRequest) => {
     const response = await registerCustomer(request);
-    setSession(persistSession(response.data));
+    setSession(persistSession(response.data, "required"));
     return response.message;
+  }, []);
+
+  const markEmailVerified = useCallback(() => {
+    setSession((currentSession) => {
+      if (!currentSession) return null;
+
+      const verifiedSession: AuthSession = {
+        ...currentSession,
+        emailVerificationStatus: "verified",
+      };
+      writeAuthSession(verifiedSession);
+      return verifiedSession;
+    });
   }, []);
 
   const logout = useCallback(async () => {
@@ -94,6 +113,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await logoutSession(currentSession.refreshToken);
       }
     } finally {
+      clearActiveSeatHold();
+      clearPendingSeatSelection();
+      clearTicketBookingReferences();
       clearSession();
     }
   }, [clearSession]);
@@ -103,11 +125,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: session?.user ?? null,
       isAuthenticated: Boolean(session),
       isLoading,
+      isEmailVerificationRequired:
+        session?.emailVerificationStatus === "required",
       login,
       register,
+      markEmailVerified,
       logout,
     }),
-    [isLoading, login, logout, register, session],
+    [isLoading, login, logout, markEmailVerified, register, session],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
