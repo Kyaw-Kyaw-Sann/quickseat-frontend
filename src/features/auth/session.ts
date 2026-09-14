@@ -8,7 +8,10 @@ import {
 
 let activeRefresh: Promise<AuthSession | null> | null = null;
 
-export function createSession(response: AuthResponse): AuthSession {
+export function createSession(
+  response: AuthResponse,
+  emailVerificationStatus: AuthSession["emailVerificationStatus"] = "unknown",
+): AuthSession {
   return {
     user: {
       userId: response.userId,
@@ -19,11 +22,15 @@ export function createSession(response: AuthResponse): AuthSession {
     accessToken: response.accessToken,
     refreshToken: response.refreshToken,
     tokenType: response.tokenType,
+    emailVerificationStatus,
   };
 }
 
-export function persistSession(response: AuthResponse): AuthSession {
-  const session = createSession(response);
+export function persistSession(
+  response: AuthResponse,
+  emailVerificationStatus: AuthSession["emailVerificationStatus"] = "unknown",
+): AuthSession {
+  const session = createSession(response, emailVerificationStatus);
   writeAuthSession(session);
   return session;
 }

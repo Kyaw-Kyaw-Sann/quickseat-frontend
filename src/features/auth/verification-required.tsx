@@ -11,9 +11,13 @@ import type { FormEvent } from "react";
 
 type VerificationRequiredProps = {
   email: string;
+  onTryAgain?: () => void;
 };
 
-export function VerificationRequired({ email }: VerificationRequiredProps) {
+export function VerificationRequired({
+  email,
+  onTryAgain,
+}: VerificationRequiredProps) {
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +57,11 @@ export function VerificationRequired({ email }: VerificationRequiredProps) {
         <Button className="w-full" disabled={isSubmitting} type="submit">
           {isSubmitting ? "Sending…" : "Resend verification email"}
         </Button>
+        {onTryAgain ? (
+          <Button className="w-full" onClick={onTryAgain} variant="secondary">
+            Try again
+          </Button>
+        ) : null}
       </form>
     </Card>
   );

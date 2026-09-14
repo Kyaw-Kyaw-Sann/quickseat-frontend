@@ -22,6 +22,7 @@ export type AuthSession = {
   accessToken: string;
   refreshToken: string;
   tokenType: string;
+  emailVerificationStatus?: "required" | "unknown" | "verified";
 };
 
 export type LoginRequest = {

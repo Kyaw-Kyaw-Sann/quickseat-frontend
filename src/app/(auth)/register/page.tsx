@@ -3,6 +3,8 @@
 import { AuthFormShell } from "@/features/auth/auth-form-shell";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getAuthFormError } from "@/features/auth/form-errors";
+import { withReturnTo } from "@/features/auth/return-path";
+import { useReturnPath } from "@/features/auth/use-return-path";
 import { VerificationRequired } from "@/features/auth/verification-required";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -14,6 +16,7 @@ import type { FormEvent } from "react";
 
 export default function RegisterPage() {
   const { register } = useAuth();
+  const returnTo = useReturnPath();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
   const [registeredEmail, setRegisteredEmail] = useState("");
@@ -54,7 +57,10 @@ export default function RegisterPage() {
         footer={
           <>
             Already have an account?{" "}
-            <Link className="font-semibold text-[var(--qs-primary)]" href="/login">
+            <Link
+              className="font-semibold text-[var(--qs-primary)]"
+              href={withReturnTo("/login", returnTo)}
+            >
               Sign in
             </Link>
           </>
@@ -90,7 +96,10 @@ export default function RegisterPage() {
       </AuthFormShell>
 
       <Dialog onOpenChange={setVerificationOpen} open={verificationOpen} title="Account created">
-        <VerificationRequired email={registeredEmail} />
+        <VerificationRequired
+          email={registeredEmail}
+          onTryAgain={() => window.location.replace(returnTo)}
+        />
       </Dialog>
     </>
   );

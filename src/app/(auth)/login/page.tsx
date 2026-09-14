@@ -3,18 +3,19 @@
 import { AuthFormShell } from "@/features/auth/auth-form-shell";
 import { useAuth } from "@/features/auth/auth-provider";
 import { getAuthFormError } from "@/features/auth/form-errors";
+import { withReturnTo } from "@/features/auth/return-path";
+import { useReturnPath } from "@/features/auth/use-return-path";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { startGoogleOAuth } from "@/lib/api/auth";
 import type { FieldErrors } from "@/lib/api/types";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { FormEvent } from "react";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const router = useRouter();
+  const returnTo = useReturnPath();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +33,7 @@ export default function LoginPage() {
         email: String(form.get("email") ?? ""),
         password: String(form.get("password") ?? ""),
       });
-      router.replace(getSafeReturnPath());
+      window.location.replace(returnTo);
     } catch (error) {
       const formError = getAuthFormError(error);
       setErrorMessage(formError.message);
@@ -48,7 +49,10 @@ export default function LoginPage() {
       footer={
         <>
           New to QuickSeat?{" "}
-          <Link className="font-semibold text-[var(--qs-primary)]" href="/register">
+          <Link
+            className="font-semibold text-[var(--qs-primary)]"
+            href={withReturnTo("/register", returnTo)}
+          >
             Create an account
           </Link>
         </>
@@ -102,9 +106,4 @@ export default function LoginPage() {
       </form>
     </AuthFormShell>
   );
-}
-
-function getSafeReturnPath(): string {
-  const returnTo = new URLSearchParams(window.location.search).get("returnTo");
-  return returnTo?.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/";
 }
