@@ -8,7 +8,7 @@ type PublicLayoutProps = {
 
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--qs-bg)] text-[var(--qs-text)]">
+    <div className="flex min-h-screen flex-col bg-[var(--qs-background)] text-[var(--qs-text)]">
       <SiteHeader />
       <div className="flex-1">{children}</div>
       <SiteFooter />

@@ -1680,6 +1680,7 @@ Phase 7  — Movies
 Phase 8  — Cinemas
 Phase 9  — Showtime Discovery
 Phase 10 — Seat Selection
+
 Phase 11 — Login Interruption & Verification UX
 Phase 12 — Seat Hold & Concurrency
 Phase 13 — Checkout & Mock Payment

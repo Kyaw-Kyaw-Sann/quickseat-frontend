@@ -11,7 +11,7 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[var(--qs-border)] bg-[var(--qs-bg)]">
+    <footer className="border-t border-[var(--qs-border)] bg-[var(--qs-background)]">
       <PageContainer className="grid gap-8 py-10 sm:grid-cols-[1fr_auto] sm:items-end">
         <div>
           <QuickSeatLogo />
