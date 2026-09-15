@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -196,25 +197,13 @@ export function MovieManagementPage() {
 
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="shadow-none">
-        <form
-          className="grid gap-3 lg:grid-cols-[minmax(12rem,1fr)_11rem_11rem_10rem_auto] lg:items-end"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const data = new FormData(event.currentTarget);
-            updateUrl({
-              search: String(data.get("search") ?? "").trim(),
-              language: String(data.get("language") ?? "").trim(),
-              page: 0,
-            });
-          }}
-        >
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-movie-search">Search<Input defaultValue={search} id="admin-movie-search" key={`search-${search}`} name="search" placeholder="Movie title or supported search text" /></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-movie-language">Language<Input defaultValue={language} id="admin-movie-language" key={`language-${language}`} name="language" placeholder="e.g. English" /></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-movie-status">Lifecycle<Select id="admin-movie-status" onChange={(event) => updateUrl({ status: event.target.value, page: 0 })} value={status}><option value="">All</option><option value="UPCOMING">Upcoming</option><option value="NOW_SHOWING">Now showing</option><option value="ENDED">Ended</option></Select></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-movie-active">Active state<Select id="admin-movie-active" onChange={(event) => updateUrl({ active: event.target.value, page: 0 })} value={active}><option value="">All</option><option value="true">Active</option><option value="false">Inactive</option></Select></label>
-          <Button type="submit" variant="secondary">Apply</Button>
-        </form>
+      <Card className="p-3 shadow-none">
+        <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(12rem,1fr)_11rem_11rem_10rem]">
+          <label className="sr-only" htmlFor="admin-movie-search">Search movies</label><Input className="!min-h-10" defaultValue={search} id="admin-movie-search" name="search" placeholder="Search movies..." type="search" />
+          <label className="sr-only" htmlFor="admin-movie-language">Language</label><Input className="!min-h-10" defaultValue={language} id="admin-movie-language" name="language" placeholder="All languages" />
+          <label className="sr-only" htmlFor="admin-movie-status">Lifecycle</label><Select className="!min-h-10" defaultValue={status} id="admin-movie-status" name="status"><option value="">All lifecycles</option><option value="UPCOMING">Upcoming</option><option value="NOW_SHOWING">Now showing</option><option value="ENDED">Ended</option></Select>
+          <label className="sr-only" htmlFor="admin-movie-active">Active state</label><Select className="!min-h-10" defaultValue={active} id="admin-movie-active" name="active"><option value="">All active states</option><option value="true">Active</option><option value="false">Inactive</option></Select>
+        </LiveFilterForm>
       </Card>
 
       {loading ? <MovieTableSkeleton /> : loadError ? (
@@ -223,7 +212,7 @@ export function MovieManagementPage() {
         <EmptyState action={<Button onClick={() => updateUrl({ search: "", language: "", status: "", active: "", page: 0 })} variant="secondary">Clear filters</Button>} description="No movies match the current backend filters." title="No movies found" />
       ) : (
         <Card className="space-y-4 overflow-hidden p-0 shadow-none">
-          <div className="overflow-x-auto">
+          <div aria-label="Scrollable movie table" className="overflow-x-auto" role="region" tabIndex={0}>
             <table className="w-full min-w-[72rem] text-left text-sm">
               <thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Movie</th><th className="px-4 py-3">Details</th><th className="px-4 py-3">Release</th><th className="px-4 py-3">Lifecycle</th><th className="px-4 py-3">Active state</th><th className="px-4 py-3 text-right">Actions</th></tr></thead>
               <tbody className="divide-y divide-[var(--qs-border)]">

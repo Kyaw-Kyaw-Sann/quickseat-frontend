@@ -43,16 +43,14 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
 
   return (
     <main>
-      <header className="border-b border-[var(--qs-border)] bg-[radial-gradient(circle_at_72%_0%,#351019_0%,transparent_45%)]">
-        <PageContainer className="py-14 sm:py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--qs-primary)]">Discover extraordinary stories</p>
-          <h1 className="qs-display mt-3">Browse <span className="text-[var(--qs-primary)]">Movies</span></h1>
-          <p className="mt-4 max-w-2xl text-[var(--qs-text-muted)]">From now-showing films to upcoming releases, find your next cinema experience at QuickSeat.</p>
-        </PageContainer>
-      </header>
-
       <PageContainer className="py-8 sm:py-12">
-        <MovieFilters query={query} />
+        <header className="max-w-3xl border-b border-[var(--qs-border)] pb-6 sm:pb-7">
+          <h1 className="qs-heading">Movies</h1>
+          <p className="mt-2 text-sm text-[var(--qs-text-muted)] sm:text-base">
+            Browse now-showing films and upcoming releases at QuickSeat.
+          </p>
+        </header>
+        <div className="mt-6"><MovieFilters query={query} /></div>
         <div className="mt-9">
           {movies.length === 0 ? (
             <EmptyState

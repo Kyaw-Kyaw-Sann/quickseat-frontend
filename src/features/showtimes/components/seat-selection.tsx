@@ -325,9 +325,14 @@ export function SeatSelection({ seatMap }: SeatSelectionProps) {
             ) : null}
           </div>
 
-          <div className="overflow-x-auto px-4 py-7 sm:px-7">
+          <div
+            aria-label="Scrollable cinema seat map"
+            className="overflow-x-auto overscroll-x-contain px-3 py-6 sm:px-7 sm:py-7"
+            role="region"
+            tabIndex={0}
+          >
             <div className="mx-auto min-w-max">
-              <div className="mx-auto mb-10 w-[min(76vw,42rem)] min-w-80 text-center">
+              <div className="mx-auto mb-8 w-[min(76vw,42rem)] min-w-64 text-center sm:mb-10 sm:min-w-80">
                 <div className="h-2 rounded-[50%] bg-gradient-to-r from-transparent via-[var(--qs-primary)] to-transparent shadow-[0_8px_26px_rgba(255,24,66,0.65)]" />
                 <p className="mt-3 text-xs font-semibold uppercase tracking-[0.5em] text-[var(--qs-text-muted)]">
                   Screen
@@ -403,7 +408,7 @@ export function SeatSelection({ seatMap }: SeatSelectionProps) {
       </div>
 
       <div
-        className="sticky bottom-0 z-30 -mx-[var(--qs-page-padding)] mt-6 border-t border-[var(--qs-border)] bg-[#0e0e12]/95 px-[var(--qs-page-padding)] py-4 shadow-[0_-16px_40px_rgba(0,0,0,0.45)] backdrop-blur lg:hidden"
+        className="sticky bottom-0 z-30 -mx-[var(--qs-page-padding)] mt-6 border-t border-[var(--qs-border)] bg-[#0e0e12]/95 px-[var(--qs-page-padding)] pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-16px_40px_rgba(0,0,0,0.45)] backdrop-blur lg:hidden"
         aria-label="Selected seat summary"
       >
         <SelectionSummary
@@ -452,8 +457,8 @@ function SelectionSummary({
 
   return (
     <div data-selected-seat-ids={selectedSeatIds.join(",")}>
-      <div className={cn("flex justify-between gap-4", !compact && "block")}>
-        <div>
+      <div className={cn("flex min-w-0 justify-between gap-3", !compact && "block")}>
+        <div className="min-w-0">
           <h2 className="text-lg font-bold">Your seats</h2>
           <p className="mt-1 text-sm text-[var(--qs-text-muted)]">
             {selectedSeats.length} {selectedSeats.length === 1 ? "seat" : "seats"} selected
@@ -466,7 +471,7 @@ function SelectionSummary({
             </p>
           )}
         </div>
-        <div className={cn("text-right", !compact && "mt-5 flex items-end justify-between text-left")}>
+        <div className={cn("shrink-0 text-right", !compact && "mt-5 flex items-end justify-between text-left")}>
           {!compact && <span className="text-sm text-[var(--qs-text-muted)]">Total</span>}
           <strong className="block text-xl text-[var(--qs-primary)]">
             {formatMMK(total)}

@@ -187,7 +187,7 @@ export function TicketValidationPage() {
           <p className="text-xs leading-5 text-[var(--qs-text-muted)]">
             USB QR scanners work as keyboard input. Scanning or pressing Enter previews the ticket only; it never validates automatically.
           </p>
-          <Button disabled={!normalizedToken || previewing || validating} type="submit">
+          <Button className="w-full sm:w-auto" disabled={!normalizedToken || previewing || validating} type="submit">
             {previewing ? "Checking ticket…" : "Preview ticket"}
           </Button>
         </form>
@@ -217,14 +217,15 @@ export function TicketValidationPage() {
             The backend makes the final validity decision and enforces the staff member&apos;s assigned cinema.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 grid gap-3 sm:flex sm:flex-wrap">
             <Button
+              className="w-full sm:w-auto"
               disabled={previewing || validating || Boolean(result)}
               onClick={() => setConfirmOpen(true)}
             >
               Validate ticket
             </Button>
-            <Button disabled={previewing || validating} onClick={resetForNextTicket} variant="secondary">
+            <Button className="w-full sm:w-auto" disabled={previewing || validating} onClick={resetForNextTicket} variant="secondary">
               Check another ticket
             </Button>
           </div>
@@ -242,7 +243,7 @@ export function TicketValidationPage() {
             <LifecycleDetail label="Ticket status" status={result.ticketStatus} />
             <LifecycleDetail label="Booking status" status={result.bookingStatus} />
           </dl>
-          <Button className="mt-6" onClick={resetForNextTicket} variant="secondary">
+          <Button className="mt-6 w-full sm:w-auto" onClick={resetForNextTicket} variant="secondary">
             Validate another ticket
           </Button>
         </Card>

@@ -136,8 +136,9 @@ export function TicketQrScanner({ busy, onToken }: TicketQrScannerProps) {
         type="file"
       />
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-5 grid gap-3 sm:flex sm:flex-wrap">
         <Button
+          className="w-full sm:w-auto"
           disabled={busy || decodingImage}
           onClick={() => fileInputRef.current?.click()}
           variant="secondary"
@@ -145,11 +146,11 @@ export function TicketQrScanner({ busy, onToken }: TicketQrScannerProps) {
           {decodingImage ? "Reading QR image…" : "Choose QR image"}
         </Button>
         {cameraActive ? (
-          <Button disabled={busy} onClick={stopCamera} variant="danger">
+          <Button className="w-full sm:w-auto" disabled={busy} onClick={stopCamera} variant="danger">
             Stop camera
           </Button>
         ) : (
-          <Button disabled={busy || decodingImage} onClick={() => void startCamera()}>
+          <Button className="w-full sm:w-auto" disabled={busy || decodingImage} onClick={() => void startCamera()}>
             Start camera
           </Button>
         )}
@@ -159,7 +160,7 @@ export function TicketQrScanner({ busy, onToken }: TicketQrScannerProps) {
         <video
           aria-label="Live camera preview for scanning a QuickSeat ticket QR code"
           autoPlay
-          className="aspect-video w-full object-cover"
+          className="max-h-[65dvh] min-h-52 w-full object-cover sm:aspect-video sm:min-h-0"
           muted
           playsInline
           ref={videoRef}

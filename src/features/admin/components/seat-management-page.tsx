@@ -163,7 +163,7 @@ export function SeatManagementPage({ cinemaId, screenId }: { cinemaId: number; s
         <EmptyState description="Generate the first row-based physical seat layout for this screen." title="No seats yet" />
       ) : (
         <>
-          <Card className="overflow-x-auto shadow-none">
+          <Card aria-label="Scrollable seat layout" className="overflow-x-auto shadow-none" role="region" tabIndex={0}>
             <div className="min-w-max space-y-3" aria-label="Physical seat layout">
               <div className="mx-auto mb-6 h-2 w-2/3 rounded-full bg-[#555560]" aria-hidden="true" />
               {rows.map(([rowName, rowSeats]) => (
@@ -186,7 +186,7 @@ export function SeatManagementPage({ cinemaId, screenId }: { cinemaId: number; s
           </Card>
 
           <Card className="overflow-hidden p-0 shadow-none">
-            <div className="overflow-x-auto">
+            <div aria-label="Scrollable seat table" className="overflow-x-auto" role="region" tabIndex={0}>
               <table className="w-full min-w-[46rem] text-left text-sm">
                 <thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Seat</th><th className="px-4 py-3">Type</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Actions</th></tr></thead>
                 <tbody className="divide-y divide-[var(--qs-border)]">

@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -232,19 +233,18 @@ export function StaffManagementPage() {
       {optionsError ? <AdminNotice message={`Cinema selector data could not be loaded: ${optionsError}`} /> : null}
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="shadow-none"><form className="grid gap-3 lg:grid-cols-[minmax(14rem,1fr)_11rem_minmax(13rem,1fr)_auto] lg:items-end" onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); updateUrl({ search: String(data.get("search") ?? "").trim(), page: 0 }); }}>
-        <label className="grid gap-1.5 text-sm font-medium" htmlFor="staff-search">Search<Input defaultValue={search} id="staff-search" key={`search-${search}`} name="search" placeholder="Staff name or email" /></label>
-        <label className="grid gap-1.5 text-sm font-medium" htmlFor="staff-active">Account status<Select id="staff-active" onChange={(event) => updateUrl({ active: event.target.value, page: 0 })} value={active}><option value="">All</option><option value="true">Active</option><option value="false">Inactive</option></Select></label>
-        <label className="grid gap-1.5 text-sm font-medium" htmlFor="staff-cinema-filter">Assigned cinema<Select disabled={optionsLoading} id="staff-cinema-filter" onChange={(event) => updateUrl({ cinemaId: event.target.value, page: 0 })} value={cinemaId ?? ""}><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}{cinema.active ? "" : " (inactive)"}</option>)}</Select></label>
-        <Button type="submit" variant="secondary">Apply</Button>
-      </form></Card>
+      <Card className="p-3 shadow-none"><LiveFilterForm className="grid gap-2 md:grid-cols-3">
+        <label className="sr-only" htmlFor="staff-search">Search staff</label><Input className="!min-h-10" defaultValue={search} id="staff-search" name="search" placeholder="Search staff..." type="search" />
+        <label className="sr-only" htmlFor="staff-active">Account status</label><Select className="!min-h-10" defaultValue={active} id="staff-active" name="active"><option value="">All account states</option><option value="true">Active</option><option value="false">Inactive</option></Select>
+        <label className="sr-only" htmlFor="staff-cinema-filter">Assigned cinema</label><Select className="!min-h-10" defaultValue={cinemaId ?? ""} disabled={optionsLoading} id="staff-cinema-filter" name="cinemaId"><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}{cinema.active ? "" : " (inactive)"}</option>)}</Select>
+      </LiveFilterForm></Card>
 
       {loading ? <StaffTableSkeleton /> : loadError ? (
         <ErrorState action={<Button onClick={() => void load()} variant="secondary">Try again</Button>} description={loadError} title={networkError ? "Unable to reach QuickSeat" : "Unable to load staff"} />
       ) : !result || result.content.length === 0 ? (
         <EmptyState action={<Button onClick={() => updateUrl({ search: "", active: "", cinemaId: "", page: 0 })} variant="secondary">Clear filters</Button>} description="No staff accounts match the current backend filters." title="No staff found" />
       ) : (
-        <Card className="space-y-4 overflow-hidden p-0 shadow-none"><div className="overflow-x-auto"><table className="w-full min-w-[70rem] text-left text-sm"><thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Staff</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Cinema assignment</th><th className="px-4 py-3">Account</th><th className="px-4 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[var(--qs-border)]">
+        <Card className="space-y-4 overflow-hidden p-0 shadow-none"><div aria-label="Scrollable staff table" className="overflow-x-auto" role="region" tabIndex={0}><table className="w-full min-w-[70rem] text-left text-sm"><thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Staff</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Cinema assignment</th><th className="px-4 py-3">Account</th><th className="px-4 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[var(--qs-border)]">
           {result.content.map((staff) => <tr className="hover:bg-white/[0.02]" key={staff.id}><td className="px-4 py-4"><p className="font-semibold">{staff.name}</p><p className="mt-1 text-xs text-[var(--qs-text-muted)]">ID {staff.id}</p></td><td className="px-4 py-4 break-all">{staff.email}</td><td className="px-4 py-4"><p>{staff.cinemaName ?? cinemaName(cinemas, staff.cinemaId)}</p><p className="mt-1 text-xs text-[var(--qs-text-muted)]">Cinema ID {staff.cinemaId}</p></td><td className="px-4 py-4">{staff.active ? <StatusBadge status="ACTIVE" /> : <Badge tone="danger">INACTIVE</Badge>}</td><td className="px-4 py-4"><div className="flex justify-end gap-2"><Button className="min-h-10 px-3 text-xs" disabled={detailLoading} onClick={() => void openDetail(staff.id)} variant="ghost">View</Button><Button className="min-h-10 px-3 text-xs" disabled={detailLoading} onClick={() => void openEdit(staff.id)} variant="ghost">Edit</Button><Button className="min-h-10 px-3 text-xs" disabled={activeCinemas.length === 0} onClick={() => { setActionError(""); setActionFieldErrors({}); setAssignmentTarget(staff); }} variant="secondary">Assign cinema</Button><Button className="min-h-10 px-3 text-xs" onClick={() => { setActionError(""); setStatusTarget(staff); }} variant={staff.active ? "danger" : "secondary"}>{staff.active ? "Deactivate" : "Activate"}</Button></div></td></tr>)}
         </tbody></table></div><div className="px-4 pb-4"><AdminPagination itemLabel="staff accounts" onPageChange={(nextPage) => updateUrl({ page: nextPage })} page={result.page} totalElements={result.totalElements} totalPages={result.totalPages} /></div></Card>
       )}

@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -202,28 +203,15 @@ export function BookingManagementPage() {
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
       {detailError ? <AdminNotice message={detailError} /> : null}
 
-      <Card className="shadow-none">
-        <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(14rem,1.4fr)_11rem_repeat(3,minmax(8rem,0.7fr))_11rem_auto] xl:items-end" onSubmit={(event) => {
-          event.preventDefault();
-          const data = new FormData(event.currentTarget);
-          updateUrl({
-            search: String(data.get("search") ?? "").trim(),
-            status: String(data.get("status") ?? ""),
-            cinemaId: String(data.get("cinemaId") ?? ""),
-            movieId: String(data.get("movieId") ?? ""),
-            showtimeId: String(data.get("showtimeId") ?? ""),
-            date: String(data.get("date") ?? ""),
-            page: 0,
-          });
-        }}>
+      <Card className="p-3 shadow-none">
+        <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(14rem,1.4fr)_11rem_repeat(3,minmax(8rem,0.7fr))_11rem]">
           <FilterInput defaultValue={search} id="admin-booking-search" label="Search" name="search" placeholder="Customer email or booking reference" />
           <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-booking-status">Status<Select defaultValue={status} id="admin-booking-status" key={`status-${status}`} name="status"><option value="">All statuses</option>{bookingStatuses.map((value) => <option key={value} value={value}>{value}</option>)}</Select></label>
           <FilterInput defaultValue={cinemaId ? String(cinemaId) : ""} id="admin-booking-cinema" label="Cinema ID" min="1" name="cinemaId" step="1" type="number" />
           <FilterInput defaultValue={movieId ? String(movieId) : ""} id="admin-booking-movie" label="Movie ID" min="1" name="movieId" step="1" type="number" />
           <FilterInput defaultValue={showtimeId ? String(showtimeId) : ""} id="admin-booking-showtime" label="Showtime ID" min="1" name="showtimeId" step="1" type="number" />
           <FilterInput defaultValue={date} id="admin-booking-date" label="Date" name="date" type="date" />
-          <Button type="submit" variant="secondary">Apply</Button>
-        </form>
+        </LiveFilterForm>
       </Card>
 
       {loading ? <BookingTableSkeleton /> : loadError ? (
@@ -232,7 +220,7 @@ export function BookingManagementPage() {
         <EmptyState action={<Button onClick={() => updateUrl({ search: "", status: "", cinemaId: "", movieId: "", showtimeId: "", date: "", page: 0 })} variant="secondary">Clear filters</Button>} description="No bookings match the current backend filters." title="No bookings found" />
       ) : (
         <Card className="space-y-4 overflow-hidden p-0 shadow-none">
-          <div className="overflow-x-auto"><table className="w-full min-w-[82rem] text-left text-sm"><thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Booking</th><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Movie</th><th className="px-4 py-3">Cinema / Screen</th><th className="px-4 py-3">Showtime</th><th className="px-4 py-3">Amount</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[var(--qs-border)]">
+          <div aria-label="Scrollable booking table" className="overflow-x-auto" role="region" tabIndex={0}><table className="w-full min-w-[82rem] text-left text-sm"><thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Booking</th><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Movie</th><th className="px-4 py-3">Cinema / Screen</th><th className="px-4 py-3">Showtime</th><th className="px-4 py-3">Amount</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[var(--qs-border)]">
             {result.content.map((booking) => (
               <tr className="align-top hover:bg-white/[0.02]" key={booking.bookingReference}>
                 <td className="px-4 py-4"><p className="max-w-48 break-all font-mono font-semibold">{booking.bookingReference}</p>{booking.paymentStatus ? <p className="mt-1 text-xs text-[var(--qs-text-muted)]">Payment: {booking.paymentStatus}</p> : null}</td>
@@ -268,7 +256,7 @@ export function BookingManagementPage() {
 }
 
 function FilterInput({ label, ...props }: { label: string } & React.ComponentProps<typeof Input>) {
-  return <label className="grid gap-1.5 text-sm font-medium" htmlFor={props.id}>{label}<Input key={`${props.name}-${props.defaultValue}`} {...props} /></label>;
+  return <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor={props.id}>{label}<Input className="!min-h-10" {...props} /></label>;
 }
 
 function BookingTableSkeleton() {

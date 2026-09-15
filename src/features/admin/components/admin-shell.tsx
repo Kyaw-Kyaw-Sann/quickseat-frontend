@@ -149,24 +149,24 @@ function AdminShellContent({ children }: { children: ReactNode }) {
 
       <div className="min-w-0 lg:pl-64">
         <header className="sticky top-0 z-20 border-b border-[var(--qs-border)] bg-[rgba(17,17,20,0.96)] backdrop-blur-xl">
-          <div className="flex min-h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
+          <div className="flex min-h-16 min-w-0 items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
             <Button
               aria-controls="admin-mobile-navigation"
               aria-expanded={drawerOpen}
               aria-label="Open admin navigation"
-              className="min-h-10 px-3 lg:hidden"
+              className="min-h-11 min-w-11 shrink-0 px-3 lg:hidden"
               onClick={() => setDrawerOpen(true)}
               variant="secondary"
             >
               Menu
             </Button>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">Admin Console</p>
               <p className="hidden text-xs text-[var(--qs-text-muted)] sm:block">
                 QuickSeat operations
               </p>
             </div>
-            <div className="ml-auto flex min-w-0 items-center gap-3">
+            <div className="flex shrink-0 items-center gap-1 sm:gap-3">
               <Badge className="hidden sm:inline-flex" tone="primary">
                 ADMIN
               </Badge>
@@ -174,7 +174,7 @@ function AdminShellContent({ children }: { children: ReactNode }) {
                 <AdminIdentity />
               </div>
               <Button
-                className="min-h-10 px-3 lg:hidden"
+                className="min-h-11 px-2 sm:px-3 lg:hidden"
                 disabled={isSigningOut}
                 onClick={handleLogout}
                 variant="ghost"
@@ -185,7 +185,7 @@ function AdminShellContent({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <main className="min-w-0 px-3 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
           <div className="mx-auto min-w-0 max-w-[100rem]">{children}</div>
         </main>
       </div>

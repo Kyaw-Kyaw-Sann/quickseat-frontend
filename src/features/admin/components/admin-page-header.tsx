@@ -55,7 +55,11 @@ export function AdminPageHeader({
             </p>
           ) : null}
         </div>
-        {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
+        {actions ? (
+          <div className="grid w-full shrink-0 gap-2 sm:flex sm:w-auto sm:flex-wrap [&>*]:w-full sm:[&>*]:w-auto">
+            {actions}
+          </div>
+        ) : null}
       </div>
     </header>
   );

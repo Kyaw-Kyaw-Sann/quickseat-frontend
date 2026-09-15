@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -173,33 +174,19 @@ export function CinemaManagementPage() {
 
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="shadow-none">
-        <form
-          className="grid gap-3 md:grid-cols-[minmax(0,1fr)_12rem_auto] md:items-end"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            updateUrl({ search: String(formData.get("search") ?? "").trim(), page: 0 });
-          }}
-        >
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-cinema-search">
-            Search
-            <Input defaultValue={search} id="admin-cinema-search" name="search" placeholder="Cinema name or supported search text" />
-          </label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-cinema-active">
-            Status
-            <Select
-              id="admin-cinema-active"
-              onChange={(event) => updateUrl({ active: event.target.value, page: 0 })}
-              value={active}
-            >
+      <Card className="p-3 shadow-none">
+        <LiveFilterForm className="grid gap-2 md:grid-cols-[minmax(0,1fr)_12rem]">
+          <label className="sr-only" htmlFor="admin-cinema-search">Search cinemas</label>
+          <Input className="!min-h-10" defaultValue={search} id="admin-cinema-search" name="search" placeholder="Search cinemas..." type="search" />
+          <div>
+            <label className="sr-only" htmlFor="admin-cinema-active">Status</label>
+            <Select className="!min-h-10" defaultValue={active} id="admin-cinema-active" name="active">
               <option value="">All</option>
               <option value="true">Active</option>
               <option value="false">Inactive</option>
             </Select>
-          </label>
-          <Button type="submit" variant="secondary">Apply</Button>
-        </form>
+          </div>
+        </LiveFilterForm>
       </Card>
 
       {loading ? (
@@ -218,7 +205,7 @@ export function CinemaManagementPage() {
         />
       ) : (
         <Card className="space-y-4 overflow-hidden p-0 shadow-none">
-          <div className="overflow-x-auto">
+          <div aria-label="Scrollable cinema table" className="overflow-x-auto" role="region" tabIndex={0}>
             <table className="w-full min-w-[54rem] border-collapse text-left text-sm">
               <thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]">
                 <tr>

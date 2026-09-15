@@ -166,7 +166,7 @@ export function CinemaFormDialog({
         </div>
 
         {error ? <AdminNotice message={error} /> : null}
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end [&>*]:w-full sm:[&>*]:w-auto">
           <Button disabled={pending || uploading} onClick={onClose} variant="ghost">
             Cancel
           </Button>
