@@ -1688,15 +1688,18 @@ Phase 14 — Booking Confirmation
 Phase 15 — Ticket
 Phase 16 — My Bookings
 Phase 17 — Booking Detail
-///////////////////////////////
+
 Phase 18 — Staff Frontend
+
 Phase 19 — Admin Layout
 Phase 20 — Admin Cinema / Screen / Seat Management
 Phase 21 — Admin Movie Management
 Phase 22 — Admin Showtime Management
 Phase 23 — Admin Users
+
 Phase 24 — Admin Bookings
 Phase 25 — Admin Dashboard & Analytics
+
 Phase 26 — Responsive Polish
 Phase 27 — UX Edge Cases
 Phase 28 — Testing

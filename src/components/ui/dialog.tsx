@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef } from "react";
+import { cn } from "@/lib/utils/cn";
+import { useEffect, useId, useRef } from "react";
 import type { ReactNode } from "react";
 
 type DialogProps = {
@@ -9,6 +10,7 @@ type DialogProps = {
   onOpenChange: (open: boolean) => void;
   title: string;
   children: ReactNode;
+  variant?: "modal" | "drawer";
 };
 
 export function Dialog({
@@ -16,8 +18,10 @@ export function Dialog({
   onOpenChange,
   title,
   children,
+  variant = "modal",
 }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -29,8 +33,13 @@ export function Dialog({
 
   return (
     <dialog
-      aria-labelledby="quickseat-dialog-title"
-      className="w-[min(100%-2rem,32rem)] rounded-xl border border-[var(--qs-border)] bg-[var(--qs-surface)] p-0 text-[var(--qs-text)] shadow-2xl backdrop:bg-black/75"
+      aria-labelledby={titleId}
+      className={cn(
+        "overflow-y-auto border border-[var(--qs-border)] bg-[var(--qs-surface)] p-0 text-[var(--qs-text)] shadow-2xl backdrop:bg-black/75",
+        variant === "drawer"
+          ? "my-0 ml-auto mr-0 h-dvh max-h-none w-[min(88vw,24rem)] rounded-none border-y-0 border-r-0"
+          : "max-h-[calc(100dvh-2rem)] w-[min(100%-2rem,32rem)] rounded-xl",
+      )}
       onCancel={(event) => {
         event.preventDefault();
         onOpenChange(false);
@@ -39,7 +48,7 @@ export function Dialog({
       ref={dialogRef}
     >
       <div className="flex items-start justify-between gap-4 border-b border-[var(--qs-border)] p-5">
-        <h2 className="text-lg font-semibold" id="quickseat-dialog-title">
+        <h2 className="text-lg font-semibold" id={titleId}>
           {title}
         </h2>
         <Button

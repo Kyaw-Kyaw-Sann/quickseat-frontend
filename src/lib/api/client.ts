@@ -13,6 +13,7 @@ import { env } from "@/lib/config/env";
 export type ApiRequestOptions = Omit<RequestInit, "body" | "headers"> & {
   auth?: boolean;
   body?: unknown;
+  formData?: FormData;
   headers?: HeadersInit;
   query?: QueryParams;
   retryUnauthorized?: boolean;
@@ -67,6 +68,7 @@ export async function apiClient<T>(
   {
     auth = true,
     body,
+    formData,
     headers: providedHeaders,
     query,
     retryUnauthorized = true,
@@ -79,7 +81,7 @@ export async function apiClient<T>(
   const accessToken = auth ? authAdapter?.getAccessToken() : null;
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
 
-  if (body !== undefined) {
+  if (body !== undefined && formData === undefined) {
     headers.set("Content-Type", "application/json");
   }
 
@@ -88,7 +90,7 @@ export async function apiClient<T>(
   try {
     response = await fetch(buildApiUrl(path, query), {
       ...options,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: formData ?? (body === undefined ? undefined : JSON.stringify(body)),
       headers,
     });
   } catch {
@@ -106,6 +108,7 @@ export async function apiClient<T>(
           ...options,
           auth,
           body,
+          formData,
           headers: providedHeaders,
           query,
           retryUnauthorized: false,
@@ -144,6 +147,7 @@ export async function apiBlobClient(
   {
     auth = true,
     body,
+    formData,
     headers: providedHeaders,
     query,
     retryUnauthorized = true,
@@ -156,14 +160,16 @@ export async function apiBlobClient(
   const accessToken = auth ? authAdapter?.getAccessToken() : null;
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
 
-  if (body !== undefined) headers.set("Content-Type", "application/json");
+  if (body !== undefined && formData === undefined) {
+    headers.set("Content-Type", "application/json");
+  }
 
   let response: Response;
 
   try {
     response = await fetch(buildApiUrl(path, query), {
       ...options,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: formData ?? (body === undefined ? undefined : JSON.stringify(body)),
       headers,
     });
   } catch {
@@ -179,6 +185,7 @@ export async function apiBlobClient(
           ...options,
           auth,
           body,
+          formData,
           headers: providedHeaders,
           query,
           retryUnauthorized: false,
