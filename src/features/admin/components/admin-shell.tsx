@@ -57,7 +57,7 @@ function NavigationItem({
     <Link
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex items-center justify-between rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors",
+        "relative flex items-center rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors",
         active
           ? "border-[#65303a] bg-[#291419] text-white before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-[var(--qs-primary)]"
           : "border-transparent text-[var(--qs-text-muted)] hover:border-[var(--qs-border)] hover:bg-[#202025] hover:text-[var(--qs-text)]",
@@ -66,11 +66,6 @@ function NavigationItem({
       onClick={onNavigate}
     >
       <span>{item.label}</span>
-      {active ? (
-        <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-[#ff8798]">
-          Current
-        </span>
-      ) : null}
     </Link>
   );
 }

@@ -86,6 +86,35 @@ input[type="file"]::file-selector-button {
   outline-offset: 3px;
 }
 
+/* Keep both page and data-table scrollbars consistent with the dark UI. */
+* {
+  scrollbar-color: #51515b #111114;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+*::-webkit-scrollbar-track {
+  background: #111114;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 3px solid #111114;
+  border-radius: 999px;
+  background: #51515b;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #71717f;
+}
+
+*::-webkit-scrollbar-corner {
+  background: #111114;
+}
+
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-inline: contain;

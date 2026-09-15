@@ -10,14 +10,26 @@ import { Input } from "@/components/ui/input";
 import { startGoogleOAuth } from "@/lib/api/auth";
 import type { FieldErrors } from "@/lib/api/types";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import type { FormEvent } from "react";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<main className="grid min-h-screen place-items-center p-5 text-sm text-[var(--qs-text-muted)]" role="status">Loading sign-in…</main>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const { login } = useAuth();
   const returnTo = useReturnPath();
+  const searchParams = useSearchParams();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(
+    searchParams.get("oauthError") ? "Google sign-in could not be completed. Please try again." : "",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -100,7 +112,7 @@ export default function LoginPage() {
           OR
           <span className="h-px flex-1 bg-[var(--qs-border)]" />
         </div>
-        <Button className="w-full" onClick={startGoogleOAuth} variant="secondary">
+        <Button className="w-full" onClick={() => startGoogleOAuth(returnTo)} type="button" variant="secondary">
           Continue with Google
         </Button>
       </form>
