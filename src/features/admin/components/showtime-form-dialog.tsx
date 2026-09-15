@@ -183,7 +183,7 @@ export function ShowtimeFormDialog({
         ) : null}
 
         {error ? <AdminNotice message={error} /> : null}
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end [&>*]:w-full sm:[&>*]:w-auto">
           <Button disabled={pending} onClick={onClose} variant="ghost">Cancel</Button>
           <Button disabled={pending || screensLoading || !form.movieId || !form.screenId} type="submit">{pending ? "Saving…" : showtime ? "Save changes" : "Create showtime"}</Button>
         </div>

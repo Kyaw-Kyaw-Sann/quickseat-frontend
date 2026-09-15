@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { AdminPageHeader } from "@/features/admin/components/admin-page-header";
@@ -62,11 +63,10 @@ export function ScreenIndexPage() {
         description="Choose a cinema to manage its screens and physical seat layouts."
         title="Screens & Seats"
       />
-      <Card className="shadow-none">
-        <form className="flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={(event) => { event.preventDefault(); navigate(String(new FormData(event.currentTarget).get("search") ?? "").trim(), 0); }}>
-          <label className="grid flex-1 gap-1.5 text-sm font-medium" htmlFor="screen-cinema-search">Cinema search<Input defaultValue={search} id="screen-cinema-search" name="search" placeholder="Find a cinema" /></label>
-          <Button type="submit" variant="secondary">Search</Button>
-        </form>
+      <Card className="p-3 shadow-none">
+        <LiveFilterForm>
+          <label className="sr-only" htmlFor="screen-cinema-search">Cinema search</label><Input className="!min-h-10" defaultValue={search} id="screen-cinema-search" name="search" placeholder="Search cinemas..." type="search" />
+        </LiveFilterForm>
       </Card>
 
       {loading ? <Card className="space-y-3 shadow-none">{Array.from({ length: 4 }, (_, index) => <Skeleton className="h-16" key={index} />)}</Card> : error ? (

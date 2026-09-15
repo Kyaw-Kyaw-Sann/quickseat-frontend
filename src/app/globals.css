@@ -30,12 +30,24 @@ body {
   min-height: 100%;
 }
 
+html {
+  scroll-padding-top: 5rem;
+}
+
 body {
   margin: 0;
   background: var(--qs-background);
   color: var(--qs-text);
   font-family: var(--qs-font-body);
   line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
 button,
@@ -55,9 +67,63 @@ select:disabled {
   cursor: not-allowed;
 }
 
+input[type="file"] {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+input[type="file"]::file-selector-button {
+  min-height: 2.5rem;
+  max-width: 58%;
+  margin-inline-end: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 :focus-visible {
   outline: 2px solid var(--qs-primary);
   outline-offset: 3px;
+}
+
+/* Keep both page and data-table scrollbars consistent with the dark UI. */
+* {
+  scrollbar-color: #51515b #111114;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+*::-webkit-scrollbar-track {
+  background: #111114;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 3px solid #111114;
+  border-radius: 999px;
+  background: #51515b;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #71717f;
+}
+
+*::-webkit-scrollbar-corner {
+  background: #111114;
+}
+
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+[role="region"][tabindex="0"]:focus-visible {
+  border-radius: 0.5rem;
+  outline-offset: -2px;
 }
 
 .qs-display {
@@ -77,4 +143,26 @@ select:disabled {
 
 .qs-muted {
   color: var(--qs-text-muted);
+}
+
+@media (max-width: 639px) {
+  :root {
+    --qs-page-padding: 0.875rem;
+    --qs-section-space: 3.5rem;
+  }
+
+  .qs-display {
+    font-size: clamp(2.15rem, 12vw, 3.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

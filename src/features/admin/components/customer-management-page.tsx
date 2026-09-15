@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -130,17 +131,12 @@ export function CustomerManagementPage() {
     <div className="space-y-6">
       <AdminPageHeader breadcrumbs={[{ label: "Admin", href: "/admin" }, { label: "Customers" }]} description="Review customer accounts, email verification, and operational access state." title="Customers" />
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
-      <Card className="shadow-none">
-        <form className="grid gap-3 lg:grid-cols-[minmax(14rem,1fr)_11rem_12rem_auto] lg:items-end" onSubmit={(event) => {
-          event.preventDefault();
-          const data = new FormData(event.currentTarget);
-          updateUrl({ search: String(data.get("search") ?? "").trim(), page: 0 });
-        }}>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="customer-search">Search<Input defaultValue={search} id="customer-search" key={`search-${search}`} name="search" placeholder="Customer name or email" /></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="customer-active">Account status<Select id="customer-active" onChange={(event) => updateUrl({ active: event.target.value, page: 0 })} value={active}><option value="">All</option><option value="true">Active</option><option value="false">Inactive</option></Select></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="customer-verified">Email verification<Select id="customer-verified" onChange={(event) => updateUrl({ emailVerified: event.target.value, page: 0 })} value={emailVerified}><option value="">All</option><option value="true">Verified</option><option value="false">Not verified</option></Select></label>
-          <Button type="submit" variant="secondary">Apply</Button>
-        </form>
+      <Card className="p-3 shadow-none">
+        <LiveFilterForm className="grid gap-2 md:grid-cols-3">
+          <label className="sr-only" htmlFor="customer-search">Search customers</label><Input className="!min-h-10" defaultValue={search} id="customer-search" name="search" placeholder="Search customers..." type="search" />
+          <label className="sr-only" htmlFor="customer-active">Account status</label><Select className="!min-h-10" defaultValue={active} id="customer-active" name="active"><option value="">All account states</option><option value="true">Active</option><option value="false">Inactive</option></Select>
+          <label className="sr-only" htmlFor="customer-verified">Email verification</label><Select className="!min-h-10" defaultValue={emailVerified} id="customer-verified" name="emailVerified"><option value="">All verification states</option><option value="true">Verified</option><option value="false">Not verified</option></Select>
+        </LiveFilterForm>
       </Card>
 
       {loading ? <TableSkeleton label="customers" /> : loadError ? (
@@ -149,7 +145,7 @@ export function CustomerManagementPage() {
         <EmptyState action={<Button onClick={() => updateUrl({ search: "", active: "", emailVerified: "", page: 0 })} variant="secondary">Clear filters</Button>} description="No customers match the current backend filters." title="No customers found" />
       ) : (
         <Card className="space-y-4 overflow-hidden p-0 shadow-none">
-          <div className="overflow-x-auto"><table className="w-full min-w-[58rem] text-left text-sm"><thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Verification</th><th className="px-4 py-3">Account</th><th className="px-4 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[var(--qs-border)]">
+          <div aria-label="Scrollable customer table" className="overflow-x-auto" role="region" tabIndex={0}><table className="w-full min-w-[58rem] text-left text-sm"><thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Verification</th><th className="px-4 py-3">Account</th><th className="px-4 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[var(--qs-border)]">
             {result.content.map((customer) => <tr className="hover:bg-white/[0.02]" key={customer.id}><td className="px-4 py-4"><p className="font-semibold">{customer.name}</p><p className="mt-1 text-xs text-[var(--qs-text-muted)]">ID {customer.id}</p></td><td className="px-4 py-4 break-all">{customer.email}</td><td className="px-4 py-4">{customer.emailVerified ? <Badge tone="success">VERIFIED</Badge> : <Badge tone="warning">NOT VERIFIED</Badge>}</td><td className="px-4 py-4">{customer.active ? <StatusBadge status="ACTIVE" /> : <Badge tone="danger">INACTIVE</Badge>}</td><td className="px-4 py-4"><div className="flex justify-end gap-2"><Button className="min-h-10 px-3 text-xs" disabled={detailLoading} onClick={() => void openDetail(customer.id)} variant="ghost">View</Button><Button className="min-h-10 px-3 text-xs" onClick={() => { setStatusError(""); setStatusTarget(customer); }} variant={customer.active ? "danger" : "secondary"}>{customer.active ? "Deactivate" : "Activate"}</Button></div></td></tr>)}
           </tbody></table></div>
           <div className="px-4 pb-4"><AdminPagination itemLabel="customers" onPageChange={(nextPage) => updateUrl({ page: nextPage })} page={result.page} totalElements={result.totalElements} totalPages={result.totalPages} /></div>

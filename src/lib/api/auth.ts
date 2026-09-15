@@ -100,7 +100,18 @@ export function resetPassword(
   });
 }
 
-export function startGoogleOAuth(): void {
+const GOOGLE_OAUTH_RETURN_TO_KEY = "quickseat.auth.google.return-to";
+
+export function startGoogleOAuth(returnTo = "/"): void {
   if (typeof window === "undefined") return;
+  const safeReturnTo = returnTo.startsWith("/") ? returnTo : "/";
+  window.sessionStorage.setItem(GOOGLE_OAUTH_RETURN_TO_KEY, safeReturnTo);
   window.location.assign(buildApiUrl("/oauth2/authorization/google"));
+}
+
+export function consumeGoogleOAuthReturnTo(): string {
+  if (typeof window === "undefined") return "/";
+  const returnTo = window.sessionStorage.getItem(GOOGLE_OAUTH_RETURN_TO_KEY);
+  window.sessionStorage.removeItem(GOOGLE_OAUTH_RETURN_TO_KEY);
+  return returnTo?.startsWith("/") ? returnTo : "/";
 }

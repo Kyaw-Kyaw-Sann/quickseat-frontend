@@ -20,7 +20,7 @@ export function AdminPagination({
       <p className="text-sm text-[var(--qs-text-muted)]">
         {totalElements} {itemLabel} · Page {totalPages === 0 ? 0 : page + 1} of {totalPages}
       </p>
-      <div className="flex gap-2" aria-label={`${itemLabel} pagination`}>
+      <div className="flex gap-2 [&>*]:flex-1 sm:[&>*]:flex-none" aria-label={`${itemLabel} pagination`}>
         <Button
           disabled={page <= 0}
           onClick={() => onPageChange(page - 1)}

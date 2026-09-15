@@ -297,12 +297,12 @@ export function ShowtimeManagementPage() {
       {optionsError ? <AdminNotice message={`Selector data could not be loaded: ${optionsError}`} /> : null}
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="shadow-none">
-        <div className="grid gap-3 lg:grid-cols-4">
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="showtime-filter-movie">Movie<Select disabled={optionsLoading} id="showtime-filter-movie" onChange={(event) => updateUrl({ movieId: event.target.value, page: 0 })} value={movieId ?? ""}><option value="">All movies</option>{movies.map((movie) => <option key={movie.id} value={movie.id}>{movie.title}</option>)}</Select></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="showtime-filter-cinema">Cinema<Select disabled={optionsLoading} id="showtime-filter-cinema" onChange={(event) => updateUrl({ cinemaId: event.target.value, page: 0 })} value={cinemaId ?? ""}><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}</option>)}</Select></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="showtime-filter-date">Date<Input id="showtime-filter-date" onChange={(event) => updateUrl({ date: event.target.value, page: 0 })} type="date" value={date} /></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="showtime-filter-status">Status<Select id="showtime-filter-status" onChange={(event) => updateUrl({ status: event.target.value, page: 0 })} value={status}><option value="">All statuses</option><option value="ACTIVE">ACTIVE</option><option value="CANCELLED">CANCELLED</option><option value="COMPLETED">COMPLETED</option></Select></label>
+      <Card className="p-3 shadow-none">
+        <div className="grid gap-2 lg:grid-cols-4">
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-movie">Movie<Select className="!min-h-10" disabled={optionsLoading} id="showtime-filter-movie" onChange={(event) => updateUrl({ movieId: event.target.value, page: 0 })} value={movieId ?? ""}><option value="">All movies</option>{movies.map((movie) => <option key={movie.id} value={movie.id}>{movie.title}</option>)}</Select></label>
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-cinema">Cinema<Select className="!min-h-10" disabled={optionsLoading} id="showtime-filter-cinema" onChange={(event) => updateUrl({ cinemaId: event.target.value, page: 0 })} value={cinemaId ?? ""}><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}</option>)}</Select></label>
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-date">Date<Input className="!min-h-10" id="showtime-filter-date" onChange={(event) => updateUrl({ date: event.target.value, page: 0 })} type="date" value={date} /></label>
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-status">Status<Select className="!min-h-10" id="showtime-filter-status" onChange={(event) => updateUrl({ status: event.target.value, page: 0 })} value={status}><option value="">All statuses</option><option value="ACTIVE">ACTIVE</option><option value="CANCELLED">CANCELLED</option><option value="COMPLETED">COMPLETED</option></Select></label>
         </div>
       </Card>
 
@@ -312,7 +312,7 @@ export function ShowtimeManagementPage() {
         <EmptyState action={<Button onClick={() => updateUrl({ movieId: "", cinemaId: "", date: "", status: "", page: 0 })} variant="secondary">Clear filters</Button>} description="No showtimes match the current backend filters." title="No showtimes found" />
       ) : (
         <Card className="space-y-4 overflow-hidden p-0 shadow-none">
-          <div className="overflow-x-auto">
+          <div aria-label="Scrollable showtime table" className="overflow-x-auto" role="region" tabIndex={0}>
             <table className="w-full min-w-[80rem] text-left text-sm">
               <thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr><th className="px-4 py-3">Movie</th><th className="px-4 py-3">Cinema / Screen</th><th className="px-4 py-3">Start / End</th><th className="px-4 py-3">Prices</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Actions</th></tr></thead>
               <tbody className="divide-y divide-[var(--qs-border)]">

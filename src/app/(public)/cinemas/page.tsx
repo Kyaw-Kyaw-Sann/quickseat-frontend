@@ -60,23 +60,14 @@ export default async function CinemasPage({ searchParams }: CinemasPageProps) {
 
   return (
     <main>
-      <header className="border-b border-[var(--qs-border)] bg-[radial-gradient(circle_at_68%_0%,#391018_0%,transparent_46%)]">
-        <PageContainer className="py-14 sm:py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--qs-primary)]">
-            Big stories deserve a bigger screen
-          </p>
-          <h1 className="qs-display mt-3">
-            Find a <span className="text-[var(--qs-primary)]">Cinema</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-[var(--qs-text-muted)]">
-            Discover active QuickSeat cinemas and choose where your next movie
-            experience begins.
-          </p>
-        </PageContainer>
-      </header>
-
       <PageContainer className="py-8 sm:py-12">
-        <CinemaFilters query={query} />
+        <header className="max-w-3xl border-b border-[var(--qs-border)] pb-6 sm:pb-7">
+          <h1 className="qs-heading">Cinemas</h1>
+          <p className="mt-2 text-sm text-[var(--qs-text-muted)] sm:text-base">
+            Find an active QuickSeat cinema for your next movie experience.
+          </p>
+        </header>
+        <div className="mt-6"><CinemaFilters query={query} /></div>
         <div className="mt-9">
           {result.data.content.length === 0 ? (
             <EmptyState

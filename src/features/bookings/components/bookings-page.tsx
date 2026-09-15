@@ -106,21 +106,18 @@ function BookingsPageContent({ query }: { query: BookingQuery }) {
 
   return (
     <main>
-      <header className="border-b border-[var(--qs-border)] bg-[radial-gradient(circle_at_72%_0%,#351019_0%,transparent_45%)]">
-        <PageContainer className="py-12 sm:py-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--qs-primary)]">
-            Your cinema journey
-          </p>
-          <h1 className="qs-display mt-3">
-            My <span className="text-[var(--qs-primary)]">Bookings</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-[var(--qs-text-muted)]">
-            Review backend-confirmed booking statuses and continue only the actions currently available.
-          </p>
+      <header>
+        <PageContainer className="py-8 sm:py-12">
+          <div className="max-w-3xl border-b border-[var(--qs-border)] pb-6 sm:pb-7">
+            <h1 className="qs-heading">My Bookings</h1>
+            <p className="mt-2 text-sm text-[var(--qs-text-muted)] sm:text-base">
+              Review your booking statuses and continue available actions.
+            </p>
+          </div>
         </PageContainer>
       </header>
 
-      <PageContainer className="py-8 sm:py-12">
+      <PageContainer className="pb-8 pt-0 sm:pb-12">
         {viewState === "verification" && user ? (
           <div className="mx-auto max-w-xl">
             <VerificationRequired

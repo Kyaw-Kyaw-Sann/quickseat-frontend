@@ -73,7 +73,7 @@ export function AnalyticsTable({
         <h2 className="text-lg font-semibold">{title}</h2>
         <p className="mt-1 text-sm text-[var(--qs-text-muted)]">{description}</p>
       </header>
-      <div className="overflow-x-auto">
+      <div aria-label={`Scrollable ${title} table`} className="overflow-x-auto" role="region" tabIndex={0}>
         <table className="w-full min-w-[42rem] text-left text-sm">
           <thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]"><tr>{columns.map((column) => <th className="px-4 py-3" key={column} scope="col">{humanizeKey(column)}</th>)}</tr></thead>
           <tbody className="divide-y divide-[var(--qs-border)]">{state.data.map((row, rowIndex) => <tr className="hover:bg-white/[0.02]" key={rowKey(row, rowIndex)}>{columns.map((column) => <td className="px-4 py-3 align-top" key={column}>{formatAnalyticsValue(column, row[column])}</td>)}</tr>)}</tbody>

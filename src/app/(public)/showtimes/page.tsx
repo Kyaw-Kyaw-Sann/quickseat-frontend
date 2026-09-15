@@ -85,27 +85,21 @@ export default async function ShowtimesPage({
 
   return (
     <main>
-      <header className="border-b border-[var(--qs-border)] bg-[radial-gradient(circle_at_68%_0%,#391018_0%,transparent_46%)]">
-        <PageContainer className="py-14 sm:py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--qs-primary)]">
-            Your next great movie experience
-          </p>
-          <h1 className="qs-display mt-3">
-            Find <span className="text-[var(--qs-primary)]">Showtimes</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-[var(--qs-text-muted)]">
+      <PageContainer className="py-8 sm:py-12">
+        <header className="max-w-3xl border-b border-[var(--qs-border)] pb-6 sm:pb-7">
+          <h1 className="qs-heading">Showtimes</h1>
+          <p className="mt-2 text-sm text-[var(--qs-text-muted)] sm:text-base">
             Choose a movie, cinema, and date to find active future showtimes.
           </p>
-        </PageContainer>
-      </header>
-
-      <PageContainer className="py-8 sm:py-12">
-        <ShowtimeFilters
-          cinemas={cinemaOptionsResult.data}
-          movies={movieOptionsResult.data}
-          optionsError={optionsErrors[0]}
-          query={query}
-        />
+        </header>
+        <div className="mt-6">
+          <ShowtimeFilters
+            cinemas={cinemaOptionsResult.data}
+            movies={movieOptionsResult.data}
+            optionsError={optionsErrors[0]}
+            query={query}
+          />
+        </div>
 
         <section aria-labelledby="showtime-results-heading" className="mt-10">
           <div className="mb-5">

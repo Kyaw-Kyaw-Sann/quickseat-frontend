@@ -1,13 +1,9 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
-import {
-  buildBookingsHref,
-  type BookingQuery,
-  type BookingStatusFilter,
-} from "@/features/bookings/query";
+import { buildBookingsHref, type BookingQuery, type BookingStatusFilter } from "@/features/bookings/query";
 import { cn } from "@/lib/utils/cn";
 
 const statuses: { label: string; value: BookingStatusFilter }[] = [
@@ -22,17 +18,10 @@ const statuses: { label: string; value: BookingStatusFilter }[] = [
 const standardPageSizes = [10, 20, 50];
 
 export function BookingFilters({ query }: { query: BookingQuery }) {
-  const hasFilters = Boolean(
-    query.status !== "ALL" ||
-      query.category !== "ALL" ||
-      query.date ||
-      query.size !== 20,
-  );
-
   return (
-    <Card className="space-y-5 bg-[rgba(21,21,25,0.94)] p-4 backdrop-blur-xl sm:p-5">
-      <nav aria-label="Booking status">
-        <ul className="flex flex-wrap gap-2">
+    <Card className="space-y-3 bg-[rgba(21,21,25,0.94)] p-3 shadow-none backdrop-blur-xl">
+      <nav aria-label="Booking status" className="overflow-x-auto">
+        <ul className="flex min-w-max gap-2">
           {statuses.map((status) => {
             const active = query.status === status.value;
             return (
@@ -40,15 +29,12 @@ export function BookingFilters({ query }: { query: BookingQuery }) {
                 <Link
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "inline-flex min-h-10 items-center rounded-lg border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--qs-primary)]",
+                    "inline-flex min-h-10 items-center rounded-lg border px-4 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--qs-primary)] sm:text-sm",
                     active
                       ? "border-[var(--qs-primary)] bg-[var(--qs-primary)] text-white"
                       : "border-[var(--qs-border)] bg-[var(--qs-background)] text-[var(--qs-text-muted)] hover:border-[#565661] hover:text-[var(--qs-text)]",
                   )}
-                  href={buildBookingsHref(query, {
-                    page: 0,
-                    status: status.value,
-                  })}
+                  href={buildBookingsHref(query, { page: 0, status: status.value })}
                 >
                   {status.label}
                 </Link>
@@ -58,60 +44,28 @@ export function BookingFilters({ query }: { query: BookingQuery }) {
         </ul>
       </nav>
 
-      <form
-        action="/bookings"
-        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(11rem,0.7fr)_minmax(12rem,0.8fr)_minmax(8rem,0.45fr)_auto_auto]"
-        method="get"
-      >
-        {query.status !== "ALL" ? (
-          <input name="status" type="hidden" value={query.status} />
-        ) : null}
-        <div className="grid gap-1.5 text-sm font-medium text-[var(--qs-text-muted)]">
-          <label htmlFor="booking-category">Category</label>
-          <Select
-            defaultValue={query.category === "ALL" ? "" : query.category}
-            id="booking-category"
-            name="category"
-          >
+      <LiveFilterForm className="grid gap-2 sm:grid-cols-3">
+        {query.status !== "ALL" ? <input name="status" type="hidden" value={query.status} /> : null}
+        <div>
+          <label className="sr-only" htmlFor="booking-category">Category</label>
+          <Select className="!min-h-10" defaultValue={query.category === "ALL" ? "" : query.category} id="booking-category" name="category">
             <option value="">All categories</option>
             <option value="UPCOMING">Upcoming</option>
             <option value="PAST">Past</option>
           </Select>
         </div>
-        <div className="grid gap-1.5 text-sm font-medium text-[var(--qs-text-muted)]">
-          <label htmlFor="booking-date">Date</label>
-          <Input
-            defaultValue={query.date}
-            id="booking-date"
-            name="date"
-            type="date"
-          />
+        <div>
+          <label className="sr-only" htmlFor="booking-date">Date</label>
+          <Input className="!min-h-10" defaultValue={query.date} id="booking-date" name="date" type="date" />
         </div>
-        <div className="grid gap-1.5 text-sm font-medium text-[var(--qs-text-muted)]">
-          <label htmlFor="booking-page-size">Per page</label>
-          <Select
-            defaultValue={String(query.size)}
-            id="booking-page-size"
-            name="size"
-          >
-            {!standardPageSizes.includes(query.size) ? (
-              <option value={query.size}>{query.size}</option>
-            ) : null}
-            {standardPageSizes.map((size) => (
-              <option key={size} value={size}>{size}</option>
-            ))}
+        <div>
+          <label className="sr-only" htmlFor="booking-page-size">Bookings per page</label>
+          <Select className="!min-h-10" defaultValue={String(query.size)} id="booking-page-size" name="size">
+            {!standardPageSizes.includes(query.size) ? <option value={query.size}>{query.size}</option> : null}
+            {standardPageSizes.map((size) => <option key={size} value={size}>{size} per page</option>)}
           </Select>
         </div>
-        <Button className="self-end" type="submit">Apply filters</Button>
-        {hasFilters ? (
-          <Link
-            className="inline-flex min-h-11 items-center justify-center self-end rounded-lg px-3 text-sm font-semibold text-[var(--qs-text-muted)] hover:text-[var(--qs-text)]"
-            href="/bookings"
-          >
-            Clear
-          </Link>
-        ) : null}
-      </form>
+      </LiveFilterForm>
     </Card>
   );
 }

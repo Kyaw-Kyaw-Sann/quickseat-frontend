@@ -1,10 +1,10 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
 import { AdminPageHeader } from "@/features/admin/components/admin-page-header";
 import {
@@ -58,8 +58,6 @@ function parseDate(value: string | null): string {
 }
 
 export function AdminDashboardPage() {
-  const pathname = usePathname();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const from = parseDate(searchParams.get("from"));
   const to = parseDate(searchParams.get("to"));
@@ -122,36 +120,17 @@ export function AdminDashboardPage() {
     return () => { cancelled = true; window.clearTimeout(request); };
   }, []);
 
-  function updateUrl(next: { from: string; to: string; cinemaId: string; movieId: string }) {
-    const params = new URLSearchParams();
-    for (const [key, value] of Object.entries(next)) {
-      if (value) params.set(key, value);
-    }
-    const query = params.toString();
-    router.push(`${pathname}${query ? `?${query}` : ""}`);
-  }
-
   return (
     <div className="space-y-8">
       <AdminPageHeader breadcrumbs={[{ label: "Admin" }]} description="Backend-authoritative booking, revenue, occupancy, movie, and cinema performance." title="Dashboard" />
 
-      <Card className="shadow-none">
-        <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_auto] xl:items-end" onSubmit={(event) => {
-          event.preventDefault();
-          const form = new FormData(event.currentTarget);
-          updateUrl({
-            from: String(form.get("from") ?? ""),
-            to: String(form.get("to") ?? ""),
-            cinemaId: String(form.get("cinemaId") ?? ""),
-            movieId: String(form.get("movieId") ?? ""),
-          });
-        }}>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="dashboard-from">From<Input defaultValue={from} id="dashboard-from" key={`from-${from}`} name="from" type="date" /></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="dashboard-to">To<Input defaultValue={to} id="dashboard-to" key={`to-${to}`} name="to" type="date" /></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="dashboard-cinema">Cinema<Select defaultValue={cinemaId ?? ""} disabled={optionsLoading} id="dashboard-cinema" key={`cinema-${cinemaId ?? ""}`} name="cinemaId"><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}{cinema.active ? "" : " (inactive)"}</option>)}</Select></label>
-          <label className="grid gap-1.5 text-sm font-medium" htmlFor="dashboard-movie">Movie<Select defaultValue={movieId ?? ""} disabled={optionsLoading} id="dashboard-movie" key={`movie-${movieId ?? ""}`} name="movieId"><option value="">All movies</option>{movies.map((movie) => <option key={movie.id} value={movie.id}>{movie.title}</option>)}</Select></label>
-          <div className="flex gap-2"><Button type="submit" variant="secondary">Apply</Button><Button onClick={() => updateUrl({ from: "", to: "", cinemaId: "", movieId: "" })} variant="ghost">Clear</Button></div>
-        </form>
+      <Card className="p-3 shadow-none">
+        <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="dashboard-from">From<Input className="!min-h-10" defaultValue={from} id="dashboard-from" name="from" type="date" /></label>
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="dashboard-to">To<Input className="!min-h-10" defaultValue={to} id="dashboard-to" name="to" type="date" /></label>
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="dashboard-cinema">Cinema<Select className="!min-h-10" defaultValue={cinemaId ?? ""} disabled={optionsLoading} id="dashboard-cinema" name="cinemaId"><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}{cinema.active ? "" : " (inactive)"}</option>)}</Select></label>
+          <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="dashboard-movie">Movie<Select className="!min-h-10" defaultValue={movieId ?? ""} disabled={optionsLoading} id="dashboard-movie" name="movieId"><option value="">All movies</option>{movies.map((movie) => <option key={movie.id} value={movie.id}>{movie.title}</option>)}</Select></label>
+        </LiveFilterForm>
         {optionsError ? <p className="mt-3 text-sm text-[#ff9b9b]" role="alert">Filter options unavailable: {optionsError}</p> : null}
       </Card>
 

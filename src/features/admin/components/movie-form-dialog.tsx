@@ -171,7 +171,7 @@ export function MovieFormDialog({
         </div>
 
         {error ? <AdminNotice message={error} /> : null}
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end [&>*]:w-full sm:[&>*]:w-auto">
           <Button disabled={pending || posterUploading} onClick={onClose} variant="ghost">Cancel</Button>
           <Button disabled={cannotSubmit} type="submit">{pending ? "Saving…" : movie ? "Save changes" : "Create movie"}</Button>
         </div>

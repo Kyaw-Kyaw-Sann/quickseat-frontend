@@ -126,7 +126,7 @@ export function ScreenManagementPage({ cinemaId }: { cinemaId: number }) {
         <EmptyState description="Create the first screen for this cinema when the cinema is active." title="No screens yet" />
       ) : (
         <Card className="overflow-hidden p-0 shadow-none">
-          <div className="overflow-x-auto">
+          <div aria-label="Scrollable screen table" className="overflow-x-auto" role="region" tabIndex={0}>
             <table className="w-full min-w-[44rem] text-left text-sm">
               <thead className="bg-[#1d1d22] text-xs uppercase tracking-wider text-[var(--qs-text-muted)]">
                 <tr><th className="px-4 py-3">Screen</th><th className="px-4 py-3">Cinema</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Actions</th></tr>

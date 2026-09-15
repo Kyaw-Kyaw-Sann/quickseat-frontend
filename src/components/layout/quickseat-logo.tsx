@@ -13,10 +13,10 @@ export function QuickSeatLogo({ className }: QuickSeatLogoProps) {
       className={cn("inline-flex items-center gap-2.5", className)}
       href="/"
     >
-      <span className="relative block h-10 w-12 overflow-hidden rounded-lg border border-[var(--qs-border)] bg-[var(--qs-surface)] shadow-[0_0_24px_rgba(255,31,66,0.2)]">
+      <span className="relative block h-10 w-14 shrink-0 overflow-hidden drop-shadow-[0_0_15px_rgba(255,31,66,0.38)]">
         <Image
           alt=""
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
           height={356}
           priority
           src="/logo3.svg"
