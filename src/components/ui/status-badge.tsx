@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 
 type StatusBadgeProps = {
-  status: string;
+  status?: string | null;
 };
 
 const statusTone = {
@@ -21,7 +21,10 @@ const statusTone = {
 } as const;
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const tone = statusTone[status as keyof typeof statusTone] ?? "neutral";
+  const normalizedStatus = typeof status === "string" && status.trim()
+    ? status
+    : "NOT_PROVIDED";
+  const tone = statusTone[normalizedStatus as keyof typeof statusTone] ?? "neutral";
 
-  return <Badge tone={tone}>{status.replaceAll("_", " ")}</Badge>;
+  return <Badge tone={tone}>{normalizedStatus.replaceAll("_", " ")}</Badge>;
 }
