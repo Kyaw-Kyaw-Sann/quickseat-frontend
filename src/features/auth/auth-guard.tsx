@@ -10,9 +10,18 @@ import type { ReactNode } from "react";
 type AuthGuardProps = {
   children: ReactNode;
   roles?: readonly Role[];
+  loadingFallback?: ReactNode;
+  deniedFallback?: ReactNode;
+  deniedRedirectTo?: string | null;
 };
 
-export function AuthGuard({ children, roles }: AuthGuardProps) {
+export function AuthGuard({
+  children,
+  roles,
+  loadingFallback,
+  deniedFallback,
+  deniedRedirectTo = "/",
+}: AuthGuardProps) {
   const { user, isLoading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -26,13 +35,23 @@ export function AuthGuard({ children, roles }: AuthGuardProps) {
       return;
     }
 
-    if (!roleAllowed) router.replace("/");
-  }, [isLoading, pathname, roleAllowed, router, user]);
+    if (!roleAllowed && deniedRedirectTo) router.replace(deniedRedirectTo);
+  }, [deniedRedirectTo, isLoading, pathname, roleAllowed, router, user]);
 
-  if (isLoading || !user || !roleAllowed) {
+  if (isLoading || !user) {
+    return loadingFallback ?? (
+      <p className="p-6 text-center text-sm text-[var(--qs-text-muted)]" role="status">
+        Checking access&hellip;
+      </p>
+    );
+  }
+
+  if (!roleAllowed) {
+    if (deniedFallback) return deniedFallback;
+
     return (
       <p className="p-6 text-center text-sm text-[var(--qs-text-muted)]" role="status">
-        Checking access…
+        Checking access&hellip;
       </p>
     );
   }

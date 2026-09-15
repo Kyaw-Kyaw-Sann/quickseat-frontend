@@ -6,6 +6,7 @@ import { FeaturedMovieHero } from "@/features/home/components/featured-movie-her
 import { HomeCinemaCard } from "@/features/home/components/home-cinema-card";
 import { HomeMovieCard } from "@/features/home/components/home-movie-card";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import type { Movie } from "@/features/movies/types";
 import { getCinemas } from "@/lib/api/cinemas";
 import { getNowShowingMovies, getUpcomingMovies } from "@/lib/api/movies";
 
@@ -28,6 +29,35 @@ function RetryLink() {
   );
 }
 
+function releaseDateTimestamp(releaseDate: Movie["releaseDate"]): number | null {
+  if (!releaseDate || !/^\d{4}-\d{2}-\d{2}$/.test(releaseDate)) return null;
+
+  const [year, month, day] = releaseDate.split("-").map(Number);
+  const timestamp = Date.UTC(year, month - 1, day);
+  const date = new Date(timestamp);
+
+  return date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day
+    ? timestamp
+    : null;
+}
+
+function selectFeaturedMovie(movies: Movie[]): Movie | undefined {
+  const nowShowingMovies = movies.filter(
+    (movie) => movie.active && movie.status === "NOW_SHOWING",
+  );
+  const datedMovies = nowShowingMovies
+    .map((movie) => ({ movie, timestamp: releaseDateTimestamp(movie.releaseDate) }))
+    .filter((entry): entry is { movie: Movie; timestamp: number } => entry.timestamp !== null);
+
+  if (datedMovies.length === 0) return nowShowingMovies[0];
+
+  return datedMovies.reduce(
+    (latest, entry) => entry.timestamp > latest.timestamp ? entry : latest,
+  ).movie;
+}
+
 export default async function Home() {
   const [nowShowingResult, upcomingResult, cinemasResult] = await Promise.allSettled([
     getNowShowingMovies({ page: 0, size: HOME_MOVIE_LIMIT }),
@@ -38,7 +68,7 @@ export default async function Home() {
   const nowShowing = nowShowingResult.status === "fulfilled" ? nowShowingResult.value.data.content : [];
   const upcoming = upcomingResult.status === "fulfilled" ? upcomingResult.value.data.content : [];
   const cinemas = cinemasResult.status === "fulfilled" ? cinemasResult.value.data.content : [];
-  const featuredMovie = nowShowing[0];
+  const featuredMovie = selectFeaturedMovie(nowShowing);
 
   return (
     <main>
