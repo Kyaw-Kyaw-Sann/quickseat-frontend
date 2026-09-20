@@ -233,11 +233,11 @@ export function StaffManagementPage() {
       {optionsError ? <AdminNotice message={`Cinema selector data could not be loaded: ${optionsError}`} /> : null}
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="p-3 shadow-none"><LiveFilterForm className="grid gap-2 md:grid-cols-3">
+      <LiveFilterForm className="grid gap-2 md:grid-cols-3">
         <label className="sr-only" htmlFor="staff-search">Search staff</label><Input className="!min-h-10" defaultValue={search} id="staff-search" name="search" placeholder="Search staff..." type="search" />
         <label className="sr-only" htmlFor="staff-active">Account status</label><Select className="!min-h-10" defaultValue={active} id="staff-active" name="active"><option value="">All account states</option><option value="true">Active</option><option value="false">Inactive</option></Select>
         <label className="sr-only" htmlFor="staff-cinema-filter">Assigned cinema</label><Select className="!min-h-10" defaultValue={cinemaId ?? ""} disabled={optionsLoading} id="staff-cinema-filter" name="cinemaId"><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}{cinema.active ? "" : " (inactive)"}</option>)}</Select>
-      </LiveFilterForm></Card>
+      </LiveFilterForm>
 
       {loading ? <StaffTableSkeleton /> : loadError ? (
         <ErrorState action={<Button onClick={() => void load()} variant="secondary">Try again</Button>} description={loadError} title={networkError ? "Unable to reach QuickSeat" : "Unable to load staff"} />

@@ -1,7 +1,6 @@
 "use client";
 
 import { PageContainer } from "@/components/layout/page-container";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ErrorState } from "@/components/ui/error-state";
@@ -48,8 +47,6 @@ type PaymentViewState =
   | "conflict"
   | "error";
 
-type Simulation = "success" | "failure";
-
 export function PaymentCheckout(props: PaymentCheckoutProps) {
   return (
     <AuthGuard roles={["CUSTOMER"]}>
@@ -71,9 +68,7 @@ function PaymentCheckoutContent({
   const [showtimeId, setShowtimeId] = useState(routeShowtimeId);
   const [authoritativeRemainingSeconds, setAuthoritativeRemainingSeconds] =
     useState(0);
-  const [activeSimulation, setActiveSimulation] = useState<Simulation | null>(
-    null,
-  );
+  const [isPaying, setIsPaying] = useState(false);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -196,13 +191,28 @@ function PaymentCheckoutContent({
     return () => window.clearInterval(resync);
   }, [synchronizeSummary, viewState]);
 
-  async function handlePayment(simulation: Simulation) {
-    if (submissionLock.current || activeSimulation || remainingSeconds <= 0) {
+  useEffect(() => {
+    if (viewState !== "ready" && viewState !== "failed") return;
+
+    function resynchronizeWhenVisible() {
+      if (document.visibilityState === "visible") void synchronizeSummary();
+    }
+
+    document.addEventListener("visibilitychange", resynchronizeWhenVisible);
+    window.addEventListener("focus", resynchronizeWhenVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", resynchronizeWhenVisible);
+      window.removeEventListener("focus", resynchronizeWhenVisible);
+    };
+  }, [synchronizeSummary, viewState]);
+
+  async function handlePayment() {
+    if (submissionLock.current || isPaying || remainingSeconds <= 0) {
       return;
     }
 
     submissionLock.current = true;
-    setActiveSimulation(simulation);
+    setIsPaying(true);
     setMessage("");
     setErrorMessage("");
     setFieldErrors({});
@@ -214,7 +224,7 @@ function PaymentCheckoutContent({
       if (!applySummary(latestSummary)) return;
 
       const response = await submitMockPayment(bookingReference, {
-        successful: simulation === "success",
+        successful: true,
       });
       const result = response.data;
       setPaymentResult(result);
@@ -251,7 +261,7 @@ function PaymentCheckoutContent({
       handleRequestError(error);
     } finally {
       submissionLock.current = false;
-      setActiveSimulation(null);
+      setIsPaying(false);
     }
   }
 
@@ -264,10 +274,10 @@ function PaymentCheckoutContent({
     Boolean(summary?.canPay) &&
     summary?.bookingStatus === "PENDING" &&
     remainingSeconds > 0 &&
-    activeSimulation === null;
+    !isPaying;
 
   return (
-    <main className="bg-[radial-gradient(circle_at_50%_0%,rgba(120,8,29,0.22),transparent_35%)]">
+    <main>
       <PageContainer className="py-10 sm:py-14">
         {viewState === "loading" ? <PaymentSkeleton /> : null}
 
@@ -334,7 +344,7 @@ function PaymentCheckoutContent({
 
         {(viewState === "ready" || viewState === "failed") && summary ? (
           <PaymentPanel
-            activeSimulation={activeSimulation}
+            isPaying={isPaying}
             fieldErrors={fieldErrors}
             message={message}
             onPay={handlePayment}
@@ -350,7 +360,7 @@ function PaymentCheckoutContent({
 }
 
 function PaymentPanel({
-  activeSimulation,
+  isPaying,
   fieldErrors,
   message,
   onPay,
@@ -359,10 +369,10 @@ function PaymentPanel({
   summary,
   viewState,
 }: {
-  activeSimulation: Simulation | null;
+  isPaying: boolean;
   fieldErrors: FieldErrors;
   message: string;
-  onPay: (simulation: Simulation) => Promise<void>;
+  onPay: () => Promise<void>;
   payable: boolean;
   remainingSeconds: number;
   summary: PaymentSummary;
@@ -370,10 +380,10 @@ function PaymentPanel({
 }) {
   return (
     <div className="mx-auto grid max-w-4xl gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <Card className="p-6 sm:p-8">
+      <Card className="p-6 shadow-none sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <Badge tone="warning">DEMO PAYMENT</Badge>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--qs-amber)]">Demo payment</p>
             <h1 className="mt-3 text-2xl font-bold sm:text-3xl">
               Complete your booking
             </h1>
@@ -410,34 +420,24 @@ function PaymentPanel({
           <FieldErrorList fieldErrors={fieldErrors} />
         ) : null}
 
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-7">
           <Button
+            className="w-full"
             disabled={!payable}
-            onClick={() => void onPay("success")}
+            onClick={() => void onPay()}
           >
-            {activeSimulation === "success"
-              ? "Processing…"
-              : "Simulate successful payment"}
-          </Button>
-          <Button
-            disabled={!payable}
-            onClick={() => void onPay("failure")}
-            variant="secondary"
-          >
-            {activeSimulation === "failure"
-              ? "Processing…"
-              : "Simulate failed payment"}
+            {isPaying ? "Processing payment..." : "Pay Now"}
           </Button>
         </div>
       </Card>
 
-      <Card className="h-fit lg:sticky lg:top-24">
+      <Card className="h-fit border-l-2 border-l-[var(--qs-amber)] shadow-none lg:sticky lg:top-24">
         <p className="text-sm font-medium text-[var(--qs-text-muted)]">
           Reservation expires in
         </p>
         <p
           aria-live="polite"
-          className="mt-2 font-mono text-4xl font-bold text-[var(--qs-amber)]"
+          className="mt-2 font-mono text-4xl font-semibold tabular-nums"
         >
           {formatCountdown(remainingSeconds)}
         </p>
@@ -446,7 +446,7 @@ function PaymentPanel({
         </p>
         <div className="mt-6 border-t border-[var(--qs-border)] pt-5">
           <p className="text-sm text-[var(--qs-text-muted)]">Backend total</p>
-          <p className="mt-1 text-2xl font-bold text-[var(--qs-primary)]">
+          <p className="mt-1 text-2xl font-semibold tabular-nums">
             {formatMMK(summary.totalAmount)}
           </p>
         </div>
@@ -476,7 +476,7 @@ function PaymentSuccess({
       <p className="mt-3 text-sm text-[var(--qs-text-muted)]">
         QuickSeat confirmed your booking. No ticket has been generated yet.
       </p>
-      <dl className="mx-auto mt-7 grid max-w-lg gap-4 rounded-xl bg-[var(--qs-surface-raised)] p-5 text-left sm:grid-cols-2">
+      <dl className="mx-auto mt-7 grid max-w-lg gap-4 border-y border-[var(--qs-border)] py-5 text-left sm:grid-cols-2">
         <Detail label="Booking reference" value={bookingReference} />
         <Detail
           label="Amount"

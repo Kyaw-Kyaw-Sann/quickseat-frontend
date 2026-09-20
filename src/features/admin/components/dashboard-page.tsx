@@ -2,7 +2,6 @@
 
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
@@ -124,7 +123,7 @@ export function AdminDashboardPage() {
     <div className="space-y-8">
       <AdminPageHeader breadcrumbs={[{ label: "Admin" }]} description="Backend-authoritative booking, revenue, occupancy, movie, and cinema performance." title="Dashboard" />
 
-      <Card className="p-3 shadow-none">
+      <div>
         <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
           <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="dashboard-from">From<Input className="!min-h-10" defaultValue={from} id="dashboard-from" name="from" type="date" /></label>
           <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="dashboard-to">To<Input className="!min-h-10" defaultValue={to} id="dashboard-to" name="to" type="date" /></label>
@@ -132,7 +131,7 @@ export function AdminDashboardPage() {
           <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="dashboard-movie">Movie<Select className="!min-h-10" defaultValue={movieId ?? ""} disabled={optionsLoading} id="dashboard-movie" name="movieId"><option value="">All movies</option>{movies.map((movie) => <option key={movie.id} value={movie.id}>{movie.title}</option>)}</Select></label>
         </LiveFilterForm>
         {optionsError ? <p className="mt-3 text-sm text-[#ff9b9b]" role="alert">Filter options unavailable: {optionsError}</p> : null}
-      </Card>
+      </div>
 
       <section aria-labelledby="dashboard-summary-heading" className="space-y-4">
         <div><h2 className="text-xl font-semibold" id="dashboard-summary-heading">Operational summary</h2><p className="mt-1 text-sm text-[var(--qs-text-muted)]">Documented booking, revenue, occupancy, and cancellation metrics.</p></div>

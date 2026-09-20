@@ -32,7 +32,7 @@ function StaffNavigation({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return <nav aria-label="Staff navigation"><ul className="space-y-1">{navigation.map((item) => {
     const active = item.href === "/staff" ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
-    return <li key={item.href}><Link aria-current={active ? "page" : undefined} className={cn("relative flex items-center rounded-lg border px-3 py-2.5 text-sm font-medium", active ? "border-[#38505a] bg-[#15242a] text-white before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-[#91d7e8]" : "border-transparent text-[var(--qs-text-muted)] hover:border-[var(--qs-border)] hover:bg-[#202025] hover:text-[var(--qs-text)]")} href={item.href} onClick={onNavigate}><span>{item.label}</span></Link></li>;
+    return <li key={item.href}><Link aria-current={active ? "page" : undefined} className={cn("relative flex items-center rounded-md px-3 py-2.5 text-sm font-medium", active ? "bg-[#20282b] text-white before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:bg-[#91d7e8]" : "text-[var(--qs-text-muted)] hover:bg-[#202025] hover:text-[var(--qs-text)]")} href={item.href} onClick={onNavigate}><span>{item.label}</span></Link></li>;
   })}</ul></nav>;
 }
 

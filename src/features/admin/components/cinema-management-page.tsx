@@ -174,8 +174,7 @@ export function CinemaManagementPage() {
 
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="p-3 shadow-none">
-        <LiveFilterForm className="grid gap-2 md:grid-cols-[minmax(0,1fr)_12rem]">
+      <LiveFilterForm className="grid gap-2 md:grid-cols-[minmax(0,1fr)_12rem]">
           <label className="sr-only" htmlFor="admin-cinema-search">Search cinemas</label>
           <Input className="!min-h-10" defaultValue={search} id="admin-cinema-search" name="search" placeholder="Search cinemas..." type="search" />
           <div>
@@ -186,8 +185,7 @@ export function CinemaManagementPage() {
               <option value="false">Inactive</option>
             </Select>
           </div>
-        </LiveFilterForm>
-      </Card>
+      </LiveFilterForm>
 
       {loading ? (
         <CinemaTableSkeleton />

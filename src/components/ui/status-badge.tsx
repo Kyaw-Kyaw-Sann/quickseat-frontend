@@ -26,5 +26,10 @@ export function StatusBadge({ status }: StatusBadgeProps) {
     : "NOT_PROVIDED";
   const tone = statusTone[normalizedStatus as keyof typeof statusTone] ?? "neutral";
 
-  return <Badge tone={tone}>{normalizedStatus.replaceAll("_", " ")}</Badge>;
+  return (
+    <Badge tone={tone}>
+      <span aria-hidden="true" className="mr-1.5 size-1.5 rounded-full bg-current opacity-80" />
+      {normalizedStatus.replaceAll("_", " ")}
+    </Badge>
+  );
 }

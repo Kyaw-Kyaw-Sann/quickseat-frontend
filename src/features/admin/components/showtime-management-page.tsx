@@ -297,14 +297,12 @@ export function ShowtimeManagementPage() {
       {optionsError ? <AdminNotice message={`Selector data could not be loaded: ${optionsError}`} /> : null}
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="p-3 shadow-none">
-        <div className="grid gap-2 lg:grid-cols-4">
+      <div className="grid gap-2 lg:grid-cols-4">
           <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-movie">Movie<Select className="!min-h-10" disabled={optionsLoading} id="showtime-filter-movie" onChange={(event) => updateUrl({ movieId: event.target.value, page: 0 })} value={movieId ?? ""}><option value="">All movies</option>{movies.map((movie) => <option key={movie.id} value={movie.id}>{movie.title}</option>)}</Select></label>
           <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-cinema">Cinema<Select className="!min-h-10" disabled={optionsLoading} id="showtime-filter-cinema" onChange={(event) => updateUrl({ cinemaId: event.target.value, page: 0 })} value={cinemaId ?? ""}><option value="">All cinemas</option>{cinemas.map((cinema) => <option key={cinema.id} value={cinema.id}>{cinema.name}</option>)}</Select></label>
           <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-date">Date<Input className="!min-h-10" id="showtime-filter-date" onChange={(event) => updateUrl({ date: event.target.value, page: 0 })} type="date" value={date} /></label>
           <label className="grid gap-1 text-xs font-medium text-[var(--qs-text-muted)]" htmlFor="showtime-filter-status">Status<Select className="!min-h-10" id="showtime-filter-status" onChange={(event) => updateUrl({ status: event.target.value, page: 0 })} value={status}><option value="">All statuses</option><option value="ACTIVE">ACTIVE</option><option value="CANCELLED">CANCELLED</option><option value="COMPLETED">COMPLETED</option></Select></label>
-        </div>
-      </Card>
+      </div>
 
       {loading ? <ShowtimeTableSkeleton /> : loadError ? (
         <ErrorState action={<Button onClick={() => void load()} variant="secondary">Try again</Button>} description={loadError} title={networkError ? "Unable to reach QuickSeat" : "Unable to load showtimes"} />

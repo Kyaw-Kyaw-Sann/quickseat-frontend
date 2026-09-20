@@ -197,14 +197,12 @@ export function MovieManagementPage() {
 
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
 
-      <Card className="p-3 shadow-none">
-        <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(12rem,1fr)_11rem_11rem_10rem]">
+      <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(12rem,1fr)_11rem_11rem_10rem]">
           <label className="sr-only" htmlFor="admin-movie-search">Search movies</label><Input className="!min-h-10" defaultValue={search} id="admin-movie-search" name="search" placeholder="Search movies..." type="search" />
           <label className="sr-only" htmlFor="admin-movie-language">Language</label><Input className="!min-h-10" defaultValue={language} id="admin-movie-language" name="language" placeholder="All languages" />
           <label className="sr-only" htmlFor="admin-movie-status">Lifecycle</label><Select className="!min-h-10" defaultValue={status} id="admin-movie-status" name="status"><option value="">All lifecycles</option><option value="UPCOMING">Upcoming</option><option value="NOW_SHOWING">Now showing</option><option value="ENDED">Ended</option></Select>
           <label className="sr-only" htmlFor="admin-movie-active">Active state</label><Select className="!min-h-10" defaultValue={active} id="admin-movie-active" name="active"><option value="">All active states</option><option value="true">Active</option><option value="false">Inactive</option></Select>
-        </LiveFilterForm>
-      </Card>
+      </LiveFilterForm>
 
       {loading ? <MovieTableSkeleton /> : loadError ? (
         <ErrorState action={<Button onClick={() => void load()} variant="secondary">Try again</Button>} description={loadError} title={networkError ? "Unable to reach QuickSeat" : "Unable to load movies"} />

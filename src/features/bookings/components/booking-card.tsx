@@ -76,8 +76,8 @@ export function BookingCard({
   }
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden p-0">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--qs-border)] bg-[var(--qs-surface-raised)] px-5 py-4">
+    <Card className="flex h-full flex-col overflow-hidden p-0 shadow-none">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--qs-border)] px-5 py-4">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--qs-text-muted)]">
             Booking reference
@@ -96,12 +96,12 @@ export function BookingCard({
           </Badge>
           {booking.status === "USED" ? <Badge tone="neutral">ENTRY USED</Badge> : null}
         </div>
-        <h2 className="mt-4 text-xl font-bold">{booking.movieTitle}</h2>
+        <h2 className="mt-4 text-xl font-semibold">{booking.movieTitle}</h2>
         <div className="mt-5 border-y border-[var(--qs-border)] py-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--qs-text-muted)]">
             Backend total
           </p>
-          <p className="mt-1 text-xl font-bold text-[var(--qs-primary)]">
+          <p className="mt-1 text-xl font-semibold tabular-nums">
             {formatMMK(booking.totalAmount)}
           </p>
         </div>
@@ -191,7 +191,7 @@ function BookingActions({
 
 function ReadOnlyLabel({ children }: { children: string }) {
   return (
-    <p className="rounded-lg border border-[var(--qs-border)] bg-[var(--qs-surface-raised)] px-4 py-3 text-center text-sm text-[var(--qs-text-muted)]">
+    <p className="border-l-2 border-[var(--qs-border)] px-3 py-2 text-sm text-[var(--qs-text-muted)]">
       {children}
     </p>
   );

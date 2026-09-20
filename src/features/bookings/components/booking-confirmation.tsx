@@ -93,7 +93,7 @@ function BookingConfirmationContent({
   }, [loadBooking]);
 
   return (
-    <main className="bg-[radial-gradient(circle_at_50%_0%,rgba(34,139,82,0.13),transparent_34%),radial-gradient(circle_at_15%_35%,rgba(120,8,29,0.16),transparent_30%)]">
+    <main>
       <PageContainer className="py-10 sm:py-14">
         {viewState === "loading" ? <ConfirmationSkeleton /> : null}
 
@@ -189,18 +189,12 @@ function ConfirmedBooking({ booking }: { booking: BookingDetail }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <Card className="overflow-hidden border-[#35543f] p-0">
-        <div className="border-b border-[#35543f] bg-[#102219] px-6 py-8 text-center sm:px-10 sm:py-10">
-          <span
-            aria-hidden="true"
-            className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-[#4ca56d] bg-[#173824] text-2xl text-[#9be4b6]"
-          >
-            ✓
-          </span>
-          <div className="mt-4">
+      <Card className="overflow-hidden p-0 shadow-none">
+        <div className="border-b border-[var(--qs-border)] px-6 py-8 sm:px-10 sm:py-10">
+          <div>
             <StatusBadge status={booking.status} />
           </div>
-          <h1 className="mt-4 text-3xl font-bold sm:text-4xl">
+          <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
             Booking confirmed
           </h1>
           <p className="mt-2 text-sm text-[var(--qs-text-muted)]">
@@ -232,7 +226,7 @@ function ConfirmedBooking({ booking }: { booking: BookingDetail }) {
             <SeatUnits seats={booking.seats} />
           </div>
 
-          <aside className="h-fit rounded-xl border border-[var(--qs-border)] bg-[var(--qs-surface-raised)] p-5">
+          <aside className="h-fit border-l-2 border-l-[var(--qs-primary)] bg-[var(--qs-surface-raised)] p-5">
             <p className="text-sm font-semibold">Your booking is ready</p>
             <p className="mt-2 text-sm leading-6 text-[var(--qs-text-muted)]">
               Generate or open your backend-issued cinema ticket.
@@ -320,7 +314,7 @@ function LifecycleCard({
       <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-[var(--qs-text-muted)]">
         {description}
       </p>
-      <dl className="mt-7 grid gap-4 rounded-xl bg-[var(--qs-surface-raised)] p-5 text-left sm:grid-cols-2">
+      <dl className="mt-7 grid gap-4 border-y border-[var(--qs-border)] py-5 text-left sm:grid-cols-2">
         <Detail label="Booking reference" value={booking.bookingReference} />
         <Detail label="Movie" value={booking.movieTitle} />
         <Detail label="Showtime" value={formatMyanmarDateTime(booking.startTime)} />
@@ -371,7 +365,7 @@ function ConfirmationSkeleton() {
   return (
     <Card className="mx-auto max-w-5xl space-y-6 p-8" role="status">
       <div className="grid place-items-center gap-4">
-        <Skeleton className="h-14 w-14 rounded-full" />
+        <Skeleton className="h-6 w-28" />
         <Skeleton className="h-9 w-72" />
         <Skeleton className="h-4 w-96 max-w-full" />
       </div>

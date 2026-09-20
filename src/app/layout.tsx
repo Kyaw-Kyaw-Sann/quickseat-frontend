@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ConnectivityBanner } from "@/components/ui/connectivity-banner";
 import { AuthProvider } from "@/features/auth/auth-provider";
 import "./globals.css";
 
@@ -16,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <ConnectivityBanner />
+        </AuthProvider>
       </body>
     </html>
   );
