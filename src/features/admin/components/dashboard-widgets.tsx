@@ -19,7 +19,7 @@ export function DashboardSummaryCards({
   onRetry: () => void;
 }) {
   if (state.status === "loading") {
-    return <div aria-label="Loading dashboard summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }, (_, index) => <Skeleton className="h-28 rounded-xl" key={index} />)}</div>;
+    return <div aria-label="Loading dashboard summary" className="grid overflow-hidden rounded-lg border border-[var(--qs-border)] sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }, (_, index) => <Skeleton className="h-28 rounded-none border-b border-r border-[var(--qs-border)]" key={index} />)}</div>;
   }
   if (state.status === "error") {
     return <ErrorState action={<Button onClick={onRetry} variant="secondary">Try again</Button>} description={state.message} title={state.network ? "Unable to reach QuickSeat" : "Unable to load dashboard summary"} />;
@@ -36,12 +36,12 @@ export function DashboardSummaryCards({
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid overflow-hidden rounded-lg border border-[var(--qs-border)] bg-[var(--qs-surface)] sm:grid-cols-2 xl:grid-cols-3">
       {metrics.map((metric) => (
-        <Card className="shadow-none" key={metric.label}>
+        <div className="border-b border-r border-[var(--qs-border)] px-5 py-5" key={metric.label}>
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--qs-text-muted)]">{metric.label}</p>
-          <p className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{metric.value}</p>
-        </Card>
+          <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight sm:text-3xl">{metric.value}</p>
+        </div>
       ))}
     </div>
   );
@@ -68,8 +68,8 @@ export function AnalyticsTable({
   if (columns.length === 0) return <EmptyState description="The backend returned rows without displayable fields." title={emptyTitle} />;
 
   return (
-    <Card className="space-y-4 overflow-hidden p-0 shadow-none">
-      <header className="px-5 pt-5">
+    <section className="space-y-4 overflow-hidden rounded-lg border border-[var(--qs-border)] bg-[var(--qs-surface)]">
+      <header className="border-b border-[var(--qs-border)] px-5 py-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         <p className="mt-1 text-sm text-[var(--qs-text-muted)]">{description}</p>
       </header>
@@ -79,7 +79,7 @@ export function AnalyticsTable({
           <tbody className="divide-y divide-[var(--qs-border)]">{state.data.map((row, rowIndex) => <tr className="hover:bg-white/[0.02]" key={rowKey(row, rowIndex)}>{columns.map((column) => <td className="px-4 py-3 align-top" key={column}>{formatAnalyticsValue(column, row[column])}</td>)}</tr>)}</tbody>
         </table>
       </div>
-    </Card>
+    </section>
   );
 }
 
@@ -110,7 +110,7 @@ export function RevenueTrend({
 
   const maximum = Math.max(...state.data.map((row) => typeof row[valueKey] === "number" ? row[valueKey] as number : 0), 0);
   return (
-    <Card className="shadow-none">
+    <section className="rounded-lg border border-[var(--qs-border)] bg-[var(--qs-surface)] p-5">
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="mt-1 text-sm text-[var(--qs-text-muted)]">{description}</p>
       <ol aria-label={title} className="mt-5 space-y-3">
@@ -120,13 +120,13 @@ export function RevenueTrend({
           return (
             <li className="grid gap-2 sm:grid-cols-[8rem_minmax(0,1fr)_9rem] sm:items-center" key={rowKey(row, index)}>
               <span className="truncate text-xs text-[var(--qs-text-muted)]">{formatAnalyticsValue(labelKey, row[labelKey])}</span>
-              <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-[#29292f]"><div className="h-full rounded-full bg-[var(--qs-primary)]" style={{ width: `${width}%` }} /></div>
+              <div aria-hidden="true" className="h-1.5 overflow-hidden bg-[#29292f]"><div className="h-full bg-[var(--qs-primary)]" style={{ width: `${width}%` }} /></div>
               <span className="text-sm font-semibold sm:text-right">{formatMMK(amount)}</span>
             </li>
           );
         })}
       </ol>
-    </Card>
+    </section>
   );
 }
 

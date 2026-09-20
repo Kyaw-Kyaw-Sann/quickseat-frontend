@@ -203,16 +203,14 @@ export function BookingManagementPage() {
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
       {detailError ? <AdminNotice message={detailError} /> : null}
 
-      <Card className="p-3 shadow-none">
-        <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(14rem,1.4fr)_11rem_repeat(3,minmax(8rem,0.7fr))_11rem]">
+      <LiveFilterForm className="grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(14rem,1.4fr)_11rem_repeat(3,minmax(8rem,0.7fr))_11rem]">
           <FilterInput defaultValue={search} id="admin-booking-search" label="Search" name="search" placeholder="Customer email or booking reference" />
           <label className="grid gap-1.5 text-sm font-medium" htmlFor="admin-booking-status">Status<Select defaultValue={status} id="admin-booking-status" key={`status-${status}`} name="status"><option value="">All statuses</option>{bookingStatuses.map((value) => <option key={value} value={value}>{value}</option>)}</Select></label>
           <FilterInput defaultValue={cinemaId ? String(cinemaId) : ""} id="admin-booking-cinema" label="Cinema ID" min="1" name="cinemaId" step="1" type="number" />
           <FilterInput defaultValue={movieId ? String(movieId) : ""} id="admin-booking-movie" label="Movie ID" min="1" name="movieId" step="1" type="number" />
           <FilterInput defaultValue={showtimeId ? String(showtimeId) : ""} id="admin-booking-showtime" label="Showtime ID" min="1" name="showtimeId" step="1" type="number" />
           <FilterInput defaultValue={date} id="admin-booking-date" label="Date" name="date" type="date" />
-        </LiveFilterForm>
-      </Card>
+      </LiveFilterForm>
 
       {loading ? <BookingTableSkeleton /> : loadError ? (
         <ErrorState action={<Button onClick={() => void load()} variant="secondary">Try again</Button>} description={loadError} title={networkError ? "Unable to reach QuickSeat" : "Unable to load bookings"} />

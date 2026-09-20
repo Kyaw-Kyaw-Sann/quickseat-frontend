@@ -38,7 +38,7 @@ export function Dialog({
         "overscroll-contain overflow-y-auto border border-[var(--qs-border)] bg-[var(--qs-surface)] p-0 text-[var(--qs-text)] shadow-2xl backdrop:bg-black/75",
         variant === "drawer"
           ? "my-0 ml-auto mr-0 h-dvh max-h-none w-[min(92vw,24rem)] max-w-full rounded-none border-y-0 border-r-0"
-          : "fixed inset-0 m-auto max-h-[calc(100dvh-1rem)] w-[min(100%-1rem,32rem)] rounded-xl sm:max-h-[calc(100dvh-2rem)] sm:w-[min(100%-2rem,32rem)]",
+          : "fixed inset-0 m-auto max-h-[calc(100dvh-1rem)] w-[min(100%-1rem,32rem)] rounded-lg sm:max-h-[calc(100dvh-2rem)] sm:w-[min(100%-2rem,32rem)]",
       )}
       onCancel={(event) => {
         event.preventDefault();

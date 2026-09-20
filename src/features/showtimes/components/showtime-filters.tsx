@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
@@ -15,7 +14,7 @@ type ShowtimeFiltersProps = {
 
 export function ShowtimeFilters({ cinemas, movies, optionsError, query }: ShowtimeFiltersProps) {
   return (
-    <Card className="bg-[rgba(21,21,25,0.94)] p-3 shadow-none backdrop-blur-xl">
+    <div>
       <LiveFilterForm className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <label className="sr-only" htmlFor="showtime-movie">Movie</label>
@@ -37,6 +36,6 @@ export function ShowtimeFilters({ cinemas, movies, optionsError, query }: Showti
         </div>
       </LiveFilterForm>
       {optionsError ? <p className="mt-3 text-sm text-[var(--qs-warning)]" role="alert">{optionsError}</p> : null}
-    </Card>
+    </div>
   );
 }

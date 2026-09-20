@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { buildMoviesHref } from "@/features/movies/query";
@@ -14,7 +13,7 @@ const statuses: { label: string; value: MovieStatusFilter }[] = [
 
 export function MovieFilters({ query }: { query: MovieQuery }) {
   return (
-    <Card className="space-y-3 bg-[rgba(21,21,25,0.92)] p-3 shadow-none backdrop-blur-xl">
+    <div className="space-y-3">
       <div aria-label="Movie status" className="flex gap-2 overflow-x-auto" role="navigation">
         {statuses.map((status) => {
           const active = query.status === status.value;
@@ -47,6 +46,6 @@ export function MovieFilters({ query }: { query: MovieQuery }) {
           <Input className="!min-h-10" defaultValue={query.language} id="movie-language" name="language" placeholder="All languages" />
         </div>
       </LiveFilterForm>
-    </Card>
+    </div>
   );
 }

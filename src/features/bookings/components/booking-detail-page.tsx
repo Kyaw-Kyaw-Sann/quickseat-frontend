@@ -202,7 +202,7 @@ function BookingDetailContent({
   }
 
   return (
-    <main className="bg-[radial-gradient(circle_at_50%_0%,rgba(120,8,29,0.18),transparent_34%)]">
+    <main>
       <PageContainer className="py-10 sm:py-14">
         {viewState === "loading" ? <BookingDetailSkeleton /> : null}
 
@@ -331,8 +331,8 @@ function BookingDetailView({
         ← Back to bookings
       </Link>
 
-      <Card className="mt-4 overflow-hidden p-0">
-        <header className="flex flex-wrap items-start justify-between gap-5 border-b border-[var(--qs-border)] bg-[var(--qs-surface-raised)] px-6 py-7 sm:px-9">
+      <Card className="mt-4 overflow-hidden p-0 shadow-none">
+        <header className="flex flex-wrap items-start justify-between gap-5 border-b border-[var(--qs-border)] px-6 py-7 sm:px-9">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--qs-primary)]">
               Booking reference

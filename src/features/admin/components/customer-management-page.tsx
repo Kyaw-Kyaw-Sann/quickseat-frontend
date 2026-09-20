@@ -131,13 +131,11 @@ export function CustomerManagementPage() {
     <div className="space-y-6">
       <AdminPageHeader breadcrumbs={[{ label: "Admin", href: "/admin" }, { label: "Customers" }]} description="Review customer accounts, email verification, and operational access state." title="Customers" />
       {successMessage ? <AdminNotice message={successMessage} tone="success" /> : null}
-      <Card className="p-3 shadow-none">
-        <LiveFilterForm className="grid gap-2 md:grid-cols-3">
+      <LiveFilterForm className="grid gap-2 md:grid-cols-3">
           <label className="sr-only" htmlFor="customer-search">Search customers</label><Input className="!min-h-10" defaultValue={search} id="customer-search" name="search" placeholder="Search customers..." type="search" />
           <label className="sr-only" htmlFor="customer-active">Account status</label><Select className="!min-h-10" defaultValue={active} id="customer-active" name="active"><option value="">All account states</option><option value="true">Active</option><option value="false">Inactive</option></Select>
           <label className="sr-only" htmlFor="customer-verified">Email verification</label><Select className="!min-h-10" defaultValue={emailVerified} id="customer-verified" name="emailVerified"><option value="">All verification states</option><option value="true">Verified</option><option value="false">Not verified</option></Select>
-        </LiveFilterForm>
-      </Card>
+      </LiveFilterForm>
 
       {loading ? <TableSkeleton label="customers" /> : loadError ? (
         <ErrorState action={<Button onClick={() => void load()} variant="secondary">Try again</Button>} description={loadError} title={networkError ? "Unable to reach QuickSeat" : "Unable to load customers"} />

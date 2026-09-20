@@ -39,7 +39,7 @@ function NavigationItem({
     return (
       <span
         aria-disabled="true"
-        className="flex cursor-not-allowed items-center justify-between gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm text-[#707078]"
+        className="flex cursor-not-allowed items-center justify-between gap-3 rounded-md px-3 py-2.5 text-sm text-[#707078]"
         title="Coming in a later phase"
       >
         <span>{item.label}</span>
@@ -57,10 +57,10 @@ function NavigationItem({
     <Link
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex items-center rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors",
+        "relative flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
         active
-          ? "border-[#65303a] bg-[#291419] text-white before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-[var(--qs-primary)]"
-          : "border-transparent text-[var(--qs-text-muted)] hover:border-[var(--qs-border)] hover:bg-[#202025] hover:text-[var(--qs-text)]",
+          ? "bg-[#272126] text-white before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:bg-[var(--qs-primary)]"
+          : "text-[var(--qs-text-muted)] hover:bg-[#202025] hover:text-[var(--qs-text)]",
       )}
       href={item.href}
       onClick={onNavigate}

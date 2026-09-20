@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LiveFilterForm } from "@/components/ui/live-filter-form";
 import { Select } from "@/components/ui/select";
@@ -19,7 +18,7 @@ const standardPageSizes = [10, 20, 50];
 
 export function BookingFilters({ query }: { query: BookingQuery }) {
   return (
-    <Card className="space-y-3 bg-[rgba(21,21,25,0.94)] p-3 shadow-none backdrop-blur-xl">
+    <div className="space-y-3">
       <nav aria-label="Booking status" className="overflow-x-auto">
         <ul className="flex min-w-max gap-2">
           {statuses.map((status) => {
@@ -66,6 +65,6 @@ export function BookingFilters({ query }: { query: BookingQuery }) {
           </Select>
         </div>
       </LiveFilterForm>
-    </Card>
+    </div>
   );
 }

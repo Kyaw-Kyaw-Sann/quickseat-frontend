@@ -8,18 +8,18 @@ type BadgeProps = ComponentPropsWithoutRef<"span"> & {
 };
 
 const toneClasses: Record<BadgeTone, string> = {
-  neutral: "border-[#4a4a54] bg-[#27272d] text-[#d4d4d8]",
-  primary: "border-[#ff5269] bg-[#3b1119] text-[#ff9aa8]",
-  success: "border-[#4cbd79] bg-[#102b1b] text-[#82e6a7]",
-  warning: "border-[#d99c37] bg-[#33230d] text-[#f8c86f]",
-  danger: "border-[#e65d5d] bg-[#351112] text-[#ff9999]",
+  neutral: "bg-[#29292f] text-[#d4d4d8]",
+  primary: "bg-[#3a171d] text-[#ff8999]",
+  success: "bg-[#163124] text-[#78d89b]",
+  warning: "bg-[#352814] text-[#edbd68]",
+  danger: "bg-[#3a191b] text-[#f58d8d]",
 };
 
 export function Badge({ className, tone = "neutral", ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold tracking-wide",
+        "inline-flex min-h-6 items-center rounded px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-[0.08em]",
         toneClasses[tone],
         className,
       )}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
@@ -159,7 +158,7 @@ export function TicketValidationPage() {
         onToken={handleScannedToken}
       />
 
-      <Card className="max-w-3xl">
+      <Card className="max-w-3xl shadow-none">
         <form
           className="space-y-4"
           onSubmit={(event) => {
@@ -197,7 +196,7 @@ export function TicketValidationPage() {
       {validationError.message ? <RequestError error={validationError} context="validation" /> : null}
 
       {preview ? (
-        <Card className="max-w-3xl" aria-live="polite">
+        <Card className="max-w-3xl shadow-none" aria-live="polite">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--qs-text-muted)]">
@@ -205,7 +204,7 @@ export function TicketValidationPage() {
               </p>
               <h2 className="mt-2 text-xl font-semibold">Review lifecycle state</h2>
             </div>
-            <Badge tone="neutral">PREVIEWED</Badge>
+            <span className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--qs-text-muted)]">Previewed</span>
           </div>
 
           <dl className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -213,7 +212,7 @@ export function TicketValidationPage() {
             <LifecycleDetail label="Booking status" status={preview.bookingStatus} />
           </dl>
 
-          <p className="mt-6 rounded-lg border border-[#6b5524] bg-[#2b220f] px-4 py-3 text-sm leading-6 text-[#f1ce7a]">
+          <p className="mt-6 border-l-2 border-[#a97b2d] bg-[#211c13] px-4 py-3 text-sm leading-6 text-[#e4c47d]">
             The backend makes the final validity decision and enforces the staff member&apos;s assigned cinema.
           </p>
 
@@ -233,8 +232,8 @@ export function TicketValidationPage() {
       ) : null}
 
       {result ? (
-        <Card className="max-w-3xl border-[#357b51]" aria-live="assertive" role="status">
-          <Badge tone="success">{result.result || "RESULT RECEIVED"}</Badge>
+        <Card className="max-w-3xl border-l-2 border-l-[#4c9b6a] shadow-none" aria-live="assertive" role="status">
+          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#78d89b]">{result.result || "Result received"}</p>
           <h2 className="mt-3 text-xl font-semibold">Ticket validated by the backend</h2>
           <p className="mt-2 text-sm text-[var(--qs-text-muted)]">
             The returned lifecycle states are shown below. No frontend status was inferred.
@@ -259,7 +258,7 @@ export function TicketValidationPage() {
             QuickSeat will ask the backend to validate this ticket for your assigned cinema. A successful single-use validation changes the ticket and booking lifecycle according to the backend response.
           </p>
           {preview ? (
-            <dl className="grid gap-3 rounded-lg border border-[var(--qs-border)] bg-[var(--qs-surface-raised)] p-4 sm:grid-cols-2">
+            <dl className="grid gap-3 border-y border-[var(--qs-border)] py-4 sm:grid-cols-2">
               <LifecycleDetail label="Current ticket status" status={preview.ticketStatus} />
               <LifecycleDetail label="Current booking status" status={preview.bookingStatus} />
             </dl>
@@ -307,7 +306,7 @@ function RequestError({
           : "Ticket was not validated";
 
   return (
-    <Card className="max-w-3xl border-[#6d2428]" role="alert">
+    <Card className="max-w-3xl border-l-2 border-l-[#a7444b] shadow-none" role="alert">
       <p className="font-semibold text-[#ff9999]">{title}</p>
       <p className="mt-2 text-sm leading-6 text-[var(--qs-text-muted)]">{error.message}</p>
     </Card>

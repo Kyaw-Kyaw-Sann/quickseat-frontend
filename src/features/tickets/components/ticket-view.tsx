@@ -211,7 +211,7 @@ function TicketViewContent({ ticketToken }: TicketViewProps) {
   }
 
   return (
-    <main className="bg-[radial-gradient(circle_at_50%_0%,rgba(120,8,29,0.2),transparent_34%),radial-gradient(circle_at_80%_50%,rgba(194,126,24,0.09),transparent_28%)]">
+    <main>
       <PageContainer className="py-10 sm:py-14">
         {viewState === "loading" ? <TicketSkeleton /> : null}
 
@@ -351,8 +351,8 @@ function ActiveTicket({
   ticket: TicketDetail;
 }) {
   return (
-    <Card className="mx-auto max-w-5xl overflow-hidden border-[#5a421b] p-0">
-      <div className="border-b border-[#5a421b] bg-[#1c170f] px-6 py-6 text-center sm:px-9">
+    <Card className="mx-auto max-w-5xl overflow-hidden p-0 shadow-none">
+      <div className="border-b border-[var(--qs-border)] px-6 py-6 text-center sm:px-9">
         <StatusBadge status={ticket.status} />
         <h1 className="mt-3 text-2xl font-bold sm:text-3xl">Your cinema ticket</h1>
         <p className="mt-2 text-sm text-[var(--qs-text-muted)]">
@@ -362,7 +362,7 @@ function ActiveTicket({
 
       <div className="grid gap-8 p-6 sm:p-9 lg:grid-cols-[22rem_minmax(0,1fr)]">
         <section aria-label="Ticket QR code" className="mx-auto w-full max-w-[22rem]">
-          <div className="grid aspect-square place-items-center overflow-hidden rounded-2xl border border-[var(--qs-border)] bg-white p-5">
+          <div className="grid aspect-square place-items-center overflow-hidden rounded-lg border border-[var(--qs-border)] bg-white p-5">
             {qrUrl ? (
               <Image
                 alt={`Admission QR code for booking ${ticket.bookingReference}`}
@@ -457,7 +457,7 @@ function InactiveTicket({
       <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-[var(--qs-text-muted)]">
         {description}
       </p>
-      <dl className="mt-7 grid gap-4 rounded-xl bg-[var(--qs-surface-raised)] p-5 text-left sm:grid-cols-2">
+      <dl className="mt-7 grid gap-4 border-y border-[var(--qs-border)] py-5 text-left sm:grid-cols-2">
         <Detail label="Booking reference" value={ticket.bookingReference} />
         <Detail label="Movie" value={ticket.movieTitle} />
         <Detail label="Cinema" value={ticket.cinemaName} />

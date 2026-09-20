@@ -145,6 +145,21 @@ function SeatHoldCheckoutContent({
     return () => window.clearInterval(resync);
   }, [synchronizeHold, viewState]);
 
+  useEffect(() => {
+    if (viewState !== "ready") return;
+
+    function resynchronizeWhenVisible() {
+      if (document.visibilityState === "visible") void synchronizeHold();
+    }
+
+    document.addEventListener("visibilitychange", resynchronizeWhenVisible);
+    window.addEventListener("focus", resynchronizeWhenVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", resynchronizeWhenVisible);
+      window.removeEventListener("focus", resynchronizeWhenVisible);
+    };
+  }, [synchronizeHold, viewState]);
+
   async function handleRelease() {
     if (isReleasing) return;
     setIsReleasing(true);

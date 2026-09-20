@@ -18,7 +18,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         aria-describedby={errorId}
         aria-invalid={Boolean(error)}
         className={cn(
-          "min-h-11 w-full rounded-lg border bg-[var(--qs-background)] px-3 text-sm text-[var(--qs-text)] outline-none placeholder:text-[#71717a] disabled:opacity-50",
+          "min-h-11 w-full rounded-md border bg-[var(--qs-background)] px-3 text-sm text-[var(--qs-text)] outline-none placeholder:text-[#71717a] disabled:opacity-50",
           error
             ? "border-[var(--qs-danger)]"
             : "border-[var(--qs-border)] focus:border-[var(--qs-primary)]",

@@ -63,11 +63,9 @@ export function ScreenIndexPage() {
         description="Choose a cinema to manage its screens and physical seat layouts."
         title="Screens & Seats"
       />
-      <Card className="p-3 shadow-none">
-        <LiveFilterForm>
+      <LiveFilterForm>
           <label className="sr-only" htmlFor="screen-cinema-search">Cinema search</label><Input className="!min-h-10" defaultValue={search} id="screen-cinema-search" name="search" placeholder="Search cinemas..." type="search" />
-        </LiveFilterForm>
-      </Card>
+      </LiveFilterForm>
 
       {loading ? <Card className="space-y-3 shadow-none">{Array.from({ length: 4 }, (_, index) => <Skeleton className="h-16" key={index} />)}</Card> : error ? (
         <ErrorState action={<Button onClick={() => void load()} variant="secondary">Try again</Button>} description={error} title="Unable to load cinemas" />
